@@ -100,9 +100,18 @@ app.post('/hello', function(req, res){
 });
 ```
 
-Testing with POST method
+###### Testing with POST method
 ```
 curl -X POST "http://localhost:3000/hello"
+```
+
+###### Load Router Methods in the app
+```
+var birds = require('./birds')
+
+// ...
+
+app.use('/birds', birds)
 ```
 
 ###### Special Method all
@@ -113,29 +122,49 @@ app.all('/test', function(req, res){
   res.send("HTTP method doesn't have any effect on this route!");
 });
 ```
-###### Rendering vies from thr router line
+
+###### Rendering views from the router line
 ```
 app.get('/components', function(req, res){
     res.render('content');
 });
 ```
 
-###### Using Router for managing multiple routes
-create a new file named anything. Say things.js for routes related to things ressource.
+###### Route Handlers File (app.use) (express.Router)
+Use the express.Router class to create modular, mountable route handlers. A Router instance is a complete middleware and routing system; for this reason, it is often referred to as a “mini-app”.
+The following example creates a router as a module, loads a middleware function in it, defines some routes, and mounts the router module on a path in the main app.
+Say things.js for routes related to things ressource.
+The most important bit, from the app file above, is
+```
+app.use('/cars', require('./cars'))
+```
+It loads the router with its routes and defines a prefix for all the routes loaded inside. The prefix part is optional (default is '/'). You could write for example
+```
+app.use(require('./cars'))
+```
+Then the server will respond only to requests from /brands and /models.
+
 *things.js*
 ```
 var express = require('express');
 var router = express.Router();
+
+// Home Page Route
 router.get('/', function(req, res){
   res.send('GET route on things.');
 });
+
+// Home Page Post
 router.post('/', function(req, res){
   res.send('POST route on things.');
 });
+
 //export this router to use in our index.js
 module.exports = router;
 ```
-Then **import** this in the index.js or the main server file where exress is defined. Both index.js and things.js should be in same directory
+
+Then **import** this in the index.js or the main server file where exress is defined. Both index.js and things.js should be in same directory. Here all the routes are scoped under **/things**
+So we have routes like **/things/about, /things/some**
 *index.js*
 ```
 var express = require('express');
@@ -173,20 +202,95 @@ app.get('*', function(req, res){
 });
 ```
 
+###### Request Parameters
+```
+app.get('/users/:userId/books/:bookId', function (req, res) {
+  res.send(req.params)
+})
+```
+
+###### Response Methods
+**res.download()** 	Prompt a file to be downloaded.
+**res.end()** 	End the response process.
+**res.json()** 	Send a JSON response.
+**res.jsonp()** 	Send a JSON response with JSONP support.
+**res.redirect()** 	Redirect a request.
+**res.render()** 	Render a view template.
+**res.send()** 	Send a response of various types.
+**res.sendFile()** 	Send a file as an octet stream.
+**res.sendStatus()** 	Set the response status code and send its string representation as the response body.
+
+###### Chainable Routes
+You can create chainable route handlers for a route path by using app.route(). Because the path is specified at a single location, creating modular routes is helpful, as is reducing redundancy and typos.
+```
+app.route('/book')
+  .get(function (req, res) {
+    res.send('Get a random book')
+  })
+  .post(function (req, res) {
+    res.send('Add a book')
+  })
+  .put(function (req, res) {
+    res.send('Update the book')
+  })
+```
+
+###### Single File to manage routes
+Every router can load other routers. This is very handy when you are organizing your app. You can even build a hierarchy of routers and routes, if you really need it.
+To load them, you only need to load the controllers/index.js file. Moreover, it is an index file, so you don’t need to provide its name when requiring it, you only need the folder name (for example controllers/index.js).
+```
+app.use(require('./controllers'))
+app.use(require('router.js'))
+```
+
+Content of controllers/index.js
+```
+var express = require('express');
+var router = express.Router();
+
+router.use('/animals', require('./animals'))
+router.use('/cars', require('./cars'))
+
+router.get('/', function(req, res) {
+  res.send('Home page')
+})
+
+router.get('/about', function(req, res) {
+  res.send('Learn about us')
+})
+
+module.exports = router
+```
+
+###### 404 not found route
+
+Handling 500 Errors (server errors)
+
 # **EXPRESS GENERATOR**
 # =======================================================
 install the express generator globally
+```
 npm install express-generator -get
-
+```
+All the available commands
+```
+express -h
+```
+Install express - scaffold command
+```
 express folder_name
 OR
 express .
-
+```
+The following creates an Express app named myapp in the current working directory:
+```
+express --view=jade myapp
+```
 Then to install dependencies and run the app.
+```
 npm install
 npm start
-
-List of files that are generated:
+```
 
 
 # **MIDDLEWARE**
@@ -241,7 +345,6 @@ app.use('/', function(req, res){
 app.listen(3000);
 ```
 
-
 ###### Third Party Middlewares - Body Parser
 This is used to parse the body of requests which have payloads attached to them. Body parser is a middleware to handle POST data in Express. In express 4 you have to manually install and mention the middleware. You can install by typing.
 
@@ -270,6 +373,66 @@ npm install --save express-session
 app.use(session({ secret: '$#%!@#@@#SSDASASDVV@@@@', key: 'sid'}));
 ```
 
+###### Router Specific Middlewares
+Middlewares in express are extremely useful. They can load sessions, extract useful data, put common headers and much more.
+
+While most of the time you add middlewares for the entire app with app.use, sometimes it is also useful to have them only for some routes. In such cases you would usually add the middleware to every individual path definition.
+
+```
+var express = require('express')
+  , router = express.Router()
+
+// Middleware
+function authorize(req, res, next) {
+  if (req.user === 'farmer') {
+   next()
+  } else {
+    res.status(403).send('Forbidden')
+  }
+}
+
+// Domestic animals page
+router.get('/domestic', authorize, function(req, res) {
+  res.send('Cow, Horse, Sheep')
+})
+
+// Wild animals page
+router.get('/wild', authorize, function(req, res) {
+  res.send('Wolf, Fox, Eagle')
+})
+
+module.exports = router
+```
+
+In larger more complex apps, having to add the middleware to each individual route quickly becomes tedious. In such cases you can add the middleware directly to the router.
+
+```
+var express = require('express')
+  , router = express.Router()
+
+// Applying middleware to all routes in the router
+router.use(function (req, res, next) {
+  if (req.user === 'farmer') {
+    next()
+  } else {
+    res.status(403).send('Forbidden')
+  }
+})
+
+// Domestic animals page
+router.get('/domestic', function(req, res) {
+  res.send('Cow, Horse, Sheep')
+})
+
+// Wild animals page
+router.get('/wild', function(req, res) {
+  res.send('Wolf, Fox, Eagle')
+})
+
+module.exports = router
+```
+
+The middlware will be executed only for all routes defined in this router and only for them. This can be used for defining whole controller authorization or making some input data transformation which will be then used everywhere inside the router or another common task.
 # USEFUL PACKAGES
 # =======================================================
 body-parser – To handle POST data.
@@ -279,7 +442,7 @@ ejs- Template engine
 express-session – For handling Session.
 nodemailer – To handle emails.
 
-# TEMPLATING
+# TEMPLATING - RENDERING VIEWS AND ROUTES
 # =======================================================
 Setting the templating engine - from HTML, Pug or EJS
 ```
@@ -288,6 +451,12 @@ app.set('view engine', 'ejs');
 Then tell express from where to deliver the front end file.
 ```
 app.set('views', __dirname + '/views');
+```
+Render view via a route
+```
+app.get('/first_template', function(req, res){
+    res.render('first_view');
+});
 ```
 
 
@@ -311,7 +480,7 @@ Set pug as the templating engine for the app inside index.js file
 app.set('view engine', 'pug');
 app.set('views','./views');
 ```
-Create first pug view
+###### Create first pug view
 ```
 doctype html
 html
@@ -320,7 +489,7 @@ html
     body
         p.greetings#people Hello World!
 ```
-Render the pug using the following
+###### Render the pug using the following
 ```
 app.get('/first_template', function(req, res){
     res.render('first_view');
@@ -345,6 +514,20 @@ This line of code, get converted to:
 <div class="container column main" id="division" width="100" height="100"></div>
 ```
 
+###### Passing values to templates
+```
+var express = require('express');
+var app = express();
+
+app.get('/dynamic_view', function(req, res){
+    res.render('dynamic', {
+        name: "TutorialsPoint", 
+        url:"http://www.tutorialspoint.com"
+    });
+});
+
+app.listen(3000);
+```
 
 
 # TEMPLATING - EJS
@@ -443,9 +626,9 @@ html
 # =======================================================
 Cookies are simple, small files/data that are sent to client with a server request and stored on the client side. Every time the user loads the website back, this cookie is sent with the request.
 We will be doing the following:
-*    Session management
-*    Personalization(Recommendation systems)
-*    User tracking
+* Session management
+* Personalization(Recommendation systems)
+* User tracking
 
 To use cookies with express, we need the cookie-parser middleware.
 ```
@@ -520,18 +703,315 @@ app.listen(3000);
    
 # SESSIONS
 # =======================================================
+https://codeforgeek.com/2014/10/express-complete-tutorial-part-4/
+Because HTTP is stateless, in order to associate a request to any other request, you need a way to store user data between HTTP requests. Cookies and URL parameters are both suitable ways to transport data between client and server. But they are both readable and on the client side. Sessions solve exactly this problem. You assign the client an ID and it makes all further requests using that ID. Information associated with the client is stored on the server linked to this ID. 
+
+We'll need the express-session, so install it using:
+```
+npm install --save express-session
+```
+
+The following code sets a session and everytime a new visit is made it updates the count of visit and displays that.
+```
+var express = require('express');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+
+var app = express();
+
+app.use(cookieParser());
+app.use(session({secret: "Shh, its a secret!"}));
+
+app.get('/', function(req, res){
+    if(req.session.page_views){
+        req.session.page_views++;
+        res.send("You visited this page " + req.session.page_views + " times");
+    }
+    req.session.page_views = 1;
+    res.send("Welcome to this page for the first time!");
+});
+
+app.listen(3000);
+```
+Generally if you dont have multiple sites then it we can use sessions otherwise we need to expire sessions from all the servers. When logging in create a cookie and a session corresponding to the cookie. If the session is present then the user is signedin. When logging out delete the session and then delete the cookie (invalidate)
+
+How to use sessions for authentication?
+Sessions can be used to store user info. Use cookie to validate and create session. When logging out delete the session, invalidate the cookie and delete the cookie.
+Where to set the session expiry?
 
 # AUTHENTICATION
 # =======================================================
+How to use cookies along with sessions to authenticate users.
+Authentication is a process in which the credentials provided are compared to those on file in a database of authorized users' information on a local operating system or within an authentication server. If the credentials match, the process is completed and the user is granted authorization for access.
+For us to create an authentication system, we will need to create a sign up page and a user-password store. The following code creates an account for us and stores it in memory. This is just for demo purposes, ALWAYS use a persistent storage(database or files) to store user information. 
+
+```
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var upload = multer(); 
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+
+app.set('view engine', 'pug');
+app.set('views','./views');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(upload.array());
+app.use(cookieParser());
+app.use(session({secret: "Your secret key"}));
+
+var Users = [];
+
+app.get('/signup', function(req, res){
+    res.render('signup');
+});
+
+app.post('/signup', function(req, res){
+    if(!req.body.id || !req.body.password){
+        res.status("400");
+        res.send("Invalid details!");
+    }
+    else{
+        Users.filter(function(user){
+            if(user.id === req.body.id){
+                res.render('signup', {message: "User Already Exists! Login or choose another user id"});
+            }
+        });
+        var newUser = {id: req.body.id, password: req.body.password};
+        Users.push(newUser);
+        req.session.user = newUser;
+        res.redirect('/protected_page');
+    }
+});
+
+function checkSignIn(req, res, ){
+    if(req.session.user){
+        next();     //If session exists, proceed to page
+    } else {
+        var err = new Error("Not logged in!");
+    console.log(req.session.user);
+        next(err);  //Error, trying to access unauthorized page!
+    }
+}
+
+app.get('/protected_page', checkSignIn, function(req, res){
+    res.render('protected_page', {id: req.session.user.id})
+});
+
+app.get('/login', function(req, res){
+    res.render('login');
+});
+
+app.post('/login', function(req, res){
+    console.log(Users);
+    if(!req.body.id || !req.body.password){
+        res.render('login', {message: "Please enter both id and password"});
+    }
+    else{
+        Users.filter(function(user){
+            if(user.id === req.body.id && user.password === req.body.password){
+                req.session.user = user;
+                res.redirect('/protected_page');
+            }
+        });
+        res.render('login', {message: "Invalid credentials!"});
+    }
+});
+
+app.get('/logout', function(req, res){
+    req.session.destroy(function(){
+        console.log("user logged out.")
+    });
+    res.redirect('/login');
+});
+
+app.use('/protected_page', function(err, req, res, next){
+console.log(err);
+    //User should be authenticated! Redirect him to log in.
+    res.redirect('/login');
+});
+
+app.listen(3000);
+```
+
+
+
+# RESTFUL APIS
+# =======================================================
+A popular architectural style of how to structure and name these APIs and the endpoints is called REST(Representational Transfer State). HTTP 1.1 was designed keeping REST principles in mind. REST was introduced by Roy Fielding in 2000 in his paper Fielding Dissertions. 
+
+
+**index.js**
+```
+var express = require('express');
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var upload = multer();
+
+var app = express();
+
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(upload.array());
+
+//Require the Router we defined in movies.js
+var movies = require('./movies.js');
+
+//Use the Router on the sub route /movies
+app.use('/movies', movies);
+
+app.listen(3000);
+```
+
+We are currently storing the movies as variable in memory.
+**movies.js**
+```
+var express = require('express');
+var router = express.Router();
+var movies = [
+    {id: 101, name: "Fight Club", year: 1999, rating: 8.1},
+    {id: 102, name: "Inception", year: 2010, rating: 8.7},
+    {id: 103, name: "The Dark Knight", year: 2008, rating: 9},
+    {id: 104, name: "12 Angry Men", year: 1957, rating: 8.9}
+];
+
+
+// The get Route
+router.get('/:id([0-9]{3,})', function(req, res){
+    var currMovie = movies.filter(function(movie){
+        if(movie.id == req.params.id){
+            return true;
+        }
+    });
+    if(currMovie.length == 1){
+        res.json(currMovie[0])
+    }
+    else{
+	    //Set status to 404 as movie was not found
+        res.status(404);
+        res.json({message: "Not Found"});
+    }
+});
+
+
+// The Post Route
+router.post('/', function(req, res){
+    //Check if all fields are provided and are valid:
+    if(!req.body.name || 
+        !req.body.year.toString().match(/^[0-9]{4}$/g) || 
+        !req.body.rating.toString().match(/^[0-9]\.[0-9]$/g)){
+        res.status(400);
+        res.json({message: "Bad Request"});
+    }
+    else{
+        var newId = movies[movies.length-1].id+1;
+        movies.push({
+            id: newId,
+            name: req.body.name,
+            year: req.body.year,
+            rating: req.body.rating
+        });
+        res.json({message: "New movie created.", location: "/movies/" + newId});
+    }
+});
+
+
+// The Put Route
+router.put('/:id', function(req, res){
+    //Check if all fields are provided and are valid:
+    if(!req.body.name || 
+        !req.body.year.toString().match(/^[0-9]{4}$/g) || 
+        !req.body.rating.toString().match(/^[0-9]\.[0-9]$/g) ||
+        !req.params.id.toString().match(/^[0-9]{3,}$/g)){
+        res.status(400);
+        res.json({message: "Bad Request"});
+    }
+    else{
+        //Gets us the index of movie with given id.
+        var updateIndex = movies.map(function(movie){
+            return movie.id;
+        }).indexOf(parseInt(req.params.id));
+        if(updateIndex === -1){
+
+            //Movie not found, create new
+            movies.push({
+                id: req.params.id,
+                name: req.body.name,
+                year: req.body.year,
+                rating: req.body.rating
+            });
+            res.json({message: "New movie created.", location: "/movies/" + req.params.id});    
+        
+        }else{
+            //Update existing movie
+            movies[updateIndex] = {
+                id: req.params.id,
+                name: req.body.name,
+                year: req.body.year,
+                rating: req.body.rating
+            };
+            res.json({message: "Movie id " + req.params.id + " updated.", location: "/movies/" + req.params.id});
+        }
+    }
+});
+
+
+// The delete route
+router.delete('/:id', function(req, res){
+    var removeIndex = movies.map(function(movie){
+        return movie.id;
+        //Gets us the index of movie with given id.
+    }).indexOf(req.params.id); 
+    if(removeIndex === -1){
+        res.json({message: "Not found"});
+    }else{
+        movies.splice(removeIndex, 1);
+        res.send({message: "Movie id " + req.params.id + " removed."});
+    }
+});
+
+module.exports = router;
+```
+
+
+# STORING IN FILES
+# =======================================================
+Node FS module for reading from files.
 
 # DEBUGGING
 # =======================================================
+Express uses the Debug module to internally log information about route matching, middleware functions, application mode, etc.
+```
+DEBUG=express:* node index.js
+```
+These logs are very helpful when a component of your app is not functioning right. This verbose output might be a little overwhelming. You can also restrict the DEBUG variable to specific area to be logged. For example, if you wish to restrict the logger to application and router, you can use:
+
+```
+DEBUG=express:application,express:router node index.js
+```
+
+Debug is turned off by default and is automatically turned off in production environment. Debug can also be extended to meet your needs, you can read more about it at its npm page.
 
 # PERFORMANCE TESTING
 # =======================================================
 
+SERVER
+Nodemon
+build
+
+DEBUG=myapp:* npm start
+set DEBUG=myapp:* & npm start
+
 # PRODUCTION INSTALLATION
 # =======================================================
+Memory leaks
+https://www.npmjs.com/package/memwatch
+# UNIT TESTS
+
 
 # WEBSITES
 https://strongloop.com/strongblog/category/express
@@ -539,3 +1019,5 @@ http://www.hacksparrow.com/category/express-js
 https://codeforgeek.com/2014/10/express-complete-tutorial-part-1/
 http://node-tricks.com/category/express/
 https://www.rosehosting.com/blog/tag/express/
+
+https://expressjs.com/en/resources/books-blogs.html
