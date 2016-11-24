@@ -1,5 +1,6 @@
 http://nodetuts.com/
 http://nodepatternsbooks.com/
+https://anotheruiguy.gitbooks.io/nodeexpreslibsass_from-scratch/content/node-npm.html
 
 require in JavaScript
 promises in JavaScript

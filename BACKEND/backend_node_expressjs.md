@@ -2,6 +2,12 @@
 # =======================================================
 Express is a web framework for Node.js. It is the first successful Node.js framework and still the most used. It is very minimalist and can be extended using its middleware system.
 Express is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. It is an open source framework developed and maintained by the Node.js foundation.
+Express is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications. 
+
+###### Why ExpressJS
+Express is built on top of Node, so yes Express adds more features. Node is just a Javascript environment with libraries to make it easy to write software, where Express extends Node specifically to make webservers easy to write.
+Express js uses node.js itself and provides more features to build applications on top Node.js 
+
 
 # **COMPARISON**
 # =======================================================
@@ -13,6 +19,17 @@ Unlike its competitors like Rails and Django, which have an opinionated way of b
 MongoDB and Mongoose
 MongoDB is an open-source, document database designed for ease of development and scaling. Well use this database to store data.
 Mongoose is a client API for node.js which makes it easy to access our database from our express application.
+
+# **DIRECTORIES**
+https://www.terlici.com/2014/08/25/best-practices-express-structure.html
+**Controllers**
+**Views**
+This folder contains all the templates which are rendered by your application. This is the place where usually the designers in your team will work.
+You would like to have one sub-folder for templates corresponding to each of your controllers. This way, you will group the templates for the same tasks together.
+
+**Helpers**
+This folder contains utility code, which is used at multiple models, middlewares or controllers, but does not fall under the category they cover. Usually you will have different files for different common tasks.
+
 
 
 # **INSTALLATION**
@@ -81,10 +98,15 @@ app.get('/', function(req, res){
 app.listen(port, [host], [backlog], [callback]]) - This function binds and listens for connections on the specified host and port. Port is the only required parameter here.
 app.listen(3000);
 
+# TASK RUNNERS
+# =======================================================
+grunt and gulp are task runners to automate everything that can be automated (i.e. compile CSS/Sass, optimize images, make a bundle and minify/transpile it).
+grunt vs. gulp (is like maven vs. gradle or configuration vs. code). Grunt is based on configuring separate independent tasks, each task opens/handles/closes file. Gulp requires less amount of code and is based on Node streams, which allows it to build pipe chains (w/o reopening the same file) and makes it faster. 
 
 
 # **ROUTING**
 # =======================================================
+Routing/Controllers are same
 
 ##### Router Methods
 Following are the routing methods:
@@ -144,6 +166,7 @@ app.use(require('./cars'))
 ```
 Then the server will respond only to requests from /brands and /models.
 
+For the first 3 lines, we are loading the dependency (express). We are using Express Router(), which is a built-in and powerful middle layer Routing service provided by ExpressJS.
 *things.js*
 ```
 var express = require('express');
@@ -459,6 +482,10 @@ app.get('/first_template', function(req, res){
 });
 ```
 
+Different templating langugaes:
+http://stackoverflow.com/questions/16513168/what-are-the-pros-and-cons-of-both-jade-and-ejs-for-node-js-templating
+- Pug
+- EJS	
 
 # TEMPLATING - PUG
 # =======================================================
@@ -532,7 +559,173 @@ app.listen(3000);
 
 # TEMPLATING - EJS
 # =======================================================
+Installing EJS
+```
+npm install --save ejs
+```
 
+Set EJS as the templating langugae
+```
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+```
+###### Render
+As we have already defined ejs as the templating engine, render autoamtically will look for pages/index.ejs
+```
+app.get('/', function(req, res) {
+    res.render('pages/index');
+});
+```
+
+###### Features
+Complies with the Express view system
+Static caching of intermediate JavaScript
+
+###### Printing Single Variable
+Unbuffered code for conditionals etc <% code %>
+Escapes html by default with <%= code %>
+Unescaped buffering with <%- code %>
+```
+<% if (user) { %>
+    <h2><%= user.name %></h2>
+<% } %>
+# Above is an object
+
+<h2>Variable</h2>
+<p><%= tagline %></p>
+```
+
+###### Looping over data
+```
+<h2>Loop</h2>
+<ul>
+    <% drinks.forEach(function(drink) { %>
+        <li><%= drink.name %> - <%= drink.drunkness %></li>
+    <% }); %>
+</ul>
+```
+
+###### Passing data to the view
+From the controller you can pass the data to the EJS file.
+```
+app.get('/',function(req,res){
+         
+          res.render('index',{title:"Home page"});
+
+});
+
+app.get('/', function(req, res) {
+    var drinks = [
+        { name: 'Bloody Mary', drunkness: 3 },
+        { name: 'Martini', drunkness: 5 },
+        { name: 'Scotch', drunkness: 10 }
+    ];
+    var tagline = "Any code of your own that you haven't looked at for six or more months might as well have been written by someone else.";
+
+    res.render('pages/index', {
+        drinks: drinks,
+        tagline: tagline
+    });
+});
+
+<html>
+<head>
+<title><%= title %></title>
+</head>
+</html>
+```
+
+###### Partials - Dividing code into multiple parts
+Using this you can breakup a file into multiple parts and use them.
+```
+<html>
+  <head>
+     <% include('header.ejs') %>
+  </head>
+  <body>
+      <% include('body.ejs') %>
+  </body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/head %>
+</head>
+<body class="container">
+
+    <header>
+        <% include ../partials/header %>
+    </header>
+
+    <main>
+        <div class="jumbotron">
+            <h1>This is great</h1>
+            <p>Welcome to templating using EJS</p>
+        </div>
+    </main>
+
+    <footer>
+        <% include ../partials/footer %>
+    </footer>
+    
+</body>
+</html>
+```
+
+###### Custom Delimiters
+Custom delimiters can also be applied globally:
+```
+var ejs = require('ejs');
+ejs.open = '{{';
+ejs.close = '}}';
+```
+
+Which would make the following a valid template:
+```
+<h1>{{= title }}</h1>
+```
+
+###### EJS Filters
+Ejs provides “filters” which helps to modify data without writing JavaScript. 
+```
+<p><%=: users | map:'name' | join %></p>
+// Capitalize first name
+<p><%=: users | first | capitalize %></p>
+```
+
+    first
+    last
+    capitalize
+    downcase
+    upcase
+    sort
+    sort_by:'prop'
+    size
+    length
+    plus:n
+    minus:n
+    times:n
+    divided_by:n
+    join:'val'
+    truncate:n
+    truncate_words:n
+    replace:pattern,substitution
+    prepend:val
+    append:val
+    map:'prop'
+    reverse
+    get:'prop'
+
+
+###### Adding a filter
+To add a filter simply add a method to the .filters object:
+```
+ejs.filters.last = function(obj) {
+  return obj[obj.length - 1];
+};
+```
 
 
 # STATIC FILES
@@ -549,7 +742,11 @@ app.use(express.static(__dirname + '/folder_name'));
 
 // Relative
 app.use(express.static('folder_name'));
+
+// Adding a namespace of public for the static files in the public directory
+app.use('/public', express.static(path.join(__dirname + '/public')));
 ```
+
 ###### Multiple Asset Directories
 ```
 var express = require('express');
@@ -560,12 +757,29 @@ app.use(express.static('images'));
 
 app.listen(3000);
 ```
+
 ###### Virtual Path Prefix
 Use the following to add virtual path prefix to static files being served.
 The following adds "/static" to all the static files in the "public" directory www.website.com/static/some.png
 ```
 app.use('/static', express.static('public'));
 ```
+
+###### Referencing Files
+For example the image file
+```
+<h1>Express FTW!</h1>
+<img src="/images/PandaWizard.png">
+```
+
+For example the css file
+```
+<head>
+  <title>MEAN is best</title>
+  <link rel="stylesheet" type="text/css" href="css/styles.css">
+</head>
+```
+
 
 # FORM DATA
 # =======================================================
@@ -837,6 +1051,8 @@ console.log(err);
 app.listen(3000);
 ```
 
+# ASSET PIPELINE
+# =======================================================
 
 
 # RESTFUL APIS
@@ -1010,6 +1226,42 @@ set DEBUG=myapp:* & npm start
 # =======================================================
 Memory leaks
 https://www.npmjs.com/package/memwatch
+
+More Libraries
+Csurf adds CSRF protection to our forms.
+Xtend is a utility library that makes it easy to copy properties from one JavaScript object to another.
+
+# BASIC TOOLS
+https://www.airpair.com/node.js/posts/top-10-mistakes-node-developers-make
+http://kb.imakewebsites.ca/2014/01/04/new-node-wishlist/
+
+# AUTOMATING RESTARTS
+Most of us are probably used to saving a file in the editor, hit [CTRL+C] to stop the application and then restart it by pressing the [UP] arrow and [Enter]. However you can automate this repetitive task and make your development process easier by using existing tools such as:
+
+    nodemon
+    node-supervisor
+    forever
+
+###### Nodemon
+What these modules do is to watch for file changes and restart the server for you. Let us take nodemon for example. First you install it globally:
+```
+sudo npm i nodemon -g
+```
+Then you should simply swap the node command for the nodemon command:
+```
+$ nodemon server.js
+  14 Nov 21:23:23 - [nodemon] v1.2.1
+  14 Nov 21:23:23 - [nodemon] to restart at any time, enter `rs`
+  14 Nov 21:23:23 - [nodemon] watching: *.*
+  14 Nov 21:23:23 - [nodemon] starting `node server.js`
+  14 Nov 21:24:14 - [nodemon] restarting due to changes...
+  14 Nov 21:24:14 - [nodemon] starting `node server.js`
+```
+
+Among the existing options for nodemon or node-supervisor, probably the most popular one is to ignore specific files or folders.
+
+https://strongloop.com/strongblog/comparison-tools-to-automate-restarting-node-js-server-after-code-changes-forever-nodemon-nodesupervisor-nodedev/
+
 # UNIT TESTS
 
 
