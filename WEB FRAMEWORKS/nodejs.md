@@ -502,3 +502,13 @@ yum install siege
 
 # c 100 means 100 consecutive users
 siege -c100 -t1M http://localhost:3000/
+
+Mongoose for MongoDB
+Sequelize for Postgre
+
+# TESTING
+Unit Testing with webpack, karma, jsdom, mocha, sinon & enzyme
+
+    Reducers
+    Components (Enzyme)
+    Synchronous and Asynchronous Actions

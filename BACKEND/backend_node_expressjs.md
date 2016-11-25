@@ -21,6 +21,7 @@ MongoDB is an open-source, document database designed for ease of development an
 Mongoose is a client API for node.js which makes it easy to access our database from our express application.
 
 # **DIRECTORIES**
+All Info - 
 https://www.terlici.com/2014/08/25/best-practices-express-structure.html
 **Controllers**
 **Views**
@@ -57,11 +58,15 @@ npm install <package-name>
 
 
 ##### Installing
+```
 mkdir new_project
 cd new_project
+```
 
 creates package.json file where all the packages are listed.
+```
 npm init
+```
 
 The --save flag can be replaced by -S flag. This flag ensures that express is added as a dependency to our package.json file. This has an advantage, the next time we need to install all the dependencies of our project we just need to run the command npm install and it’ll find the dependencies in this file and install them for us.
 ```
@@ -1259,6 +1264,9 @@ $ nodemon server.js
 ```
 
 Among the existing options for nodemon or node-supervisor, probably the most popular one is to ignore specific files or folders.
+
+**Guide**
+https://github.com/remy/nodemon
 
 https://strongloop.com/strongblog/comparison-tools-to-automate-restarting-node-js-server-after-code-changes-forever-nodemon-nodesupervisor-nodedev/
 

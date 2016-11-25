@@ -26,6 +26,10 @@ app.set('views', require('./views'));
 This is right
 app.use(require('./routes.js'))
 
+require("views")
+checks for views.js and if thats not present then views/index.js
+Directoreis not accepted
+
 Passing Path
 __dirname prints the path
 app.set('views', __dirname + '/views');
