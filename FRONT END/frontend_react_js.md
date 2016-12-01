@@ -1,5 +1,7 @@
-# BASICS
+# Basics
 # =======================================================
+https://github.com/kriasoft/react-starter-kit
+
 While building client-side apps, a team at Facebook reached a conclusion that a lot of web-developers had already noticed: the DOM is slow. They did, however, tackle this problem in an interesting way.
 To make it faster, React implements a virtual DOM that is basically a DOM tree representation in Javascript. So when it needs to read or write to the DOM, it will use the virtual representation of it. Then the virtual DOM will try to find the most efficient way to update the browsers DOM.
 The rationale for this is that JavaScript is very fast and its worth keeping a DOM tree in it to speedup its manipulation.
@@ -84,8 +86,6 @@ ReactJS creates its own virtual DOM where your components are kept. This approac
 ###### ReactJs vs AngularJS
 However, ReactJS is SEO friendly, real time and compatible with heavy traffic. Whereas, AngularJS offers easy development and testing along with reliability.
 React is amazing on the client side, but it’s ability to be rendered on the server side makes it truly special. This is because React uses a virtual DOM instead of the real one, and allows us to render our components to markup.
-
-
 
 
 # JSX
@@ -236,6 +236,36 @@ If all that a presentation component does is render HTML based on props, then yo
 Container Component: This type of component complements presentation component by providing states. Its always the guy at the top of the family tree, making sure that data is coordinated.
 You do not necessarily need a state management tool outside of what React provides if what you are building does not have too much nested children and less complex. A To-Do is is simple so we can do with what React offers for now provided we understand how and when to use a presentation or container component
 
+In React, components are the individual building blocks of how your data is viewed. You write components to handle how your data should look and to automatically render state changes. When you create a component, you define all of this by overriding React.Component’s render function.
+
+```
+import React from 'react';
+ 
+class Hello extends React.Component {
+  render() {
+    return <h1>Hello</h1>
+  }
+}
+```
+
+First off, we have ES6 import statements and class definitions, which makes our code more concise by not having to call React.createClass. But there is also some funky looking inline HTML type stuff in the component class definition’s render function. This XML-like syntax being returned from the function is called JSX. It was designed to make building React components easier because it is concise and familiar for defining tree structures with attributes.
+
+All of this new syntax might look a bit strange, but don’t worry because in just a bit well use Babel to transpile both the ES6 syntax and the JSX syntax into ES5 JavaScript that can be run in a browser.
+
+**Without ES6 and JSX**
+```
+var React = require('react');
+ 
+var Hello = React.createClass({displayName: 'Hello',
+  render: function() {
+    return React.createElement("h1", null, "Hello ");
+  }
+});
+```
+
+**Rendering**
+Now that we have our component class, we need to add some code to “mount” this component to a DOM element. This will take our React component and render it to display within an element of an HTML page. To do this we import the React DOM and call its render function, passing in a component object as well as an actual DOM element to attach to.
+
 ```
 var Books = React.createClass({
 render: function() {
@@ -297,48 +327,150 @@ So, to answer your question, learn Redux with React.
 
 
 
-# SETTING UP REACT ON NODE
+# SETTING UP REACT ON EXPRESS 1
 # =======================================================
 ###### Creating a node app
+```
 npm init
+```
+
+###### Install react and react-dom
+```
+npm install --save react
+npm install --save react-dom
+```
+
+###### Install Webpack
+We will also need to install Webpack and the Webpack development server for serving our bundled JavaScript application. You may need to use “sudo” to install the dev server package globally.
+```
+npm install --save-dev webpack
+npm install webpack-dev-server -g
+```
 
 ###### Install Babel
-###### Install Webpack
+Now that our bundling tool is taken care of, we need a transpiler for interpreting our ES6 code. This is where Babel comes in. Let’s install the babel-loader and babel-core packages that we’ll use to work with Webpack, as well as the ES2015 and React presets for loading the code that we’ll write.
+```
+npm install --save-dev babel-loader
+npm install --save-dev babel-core
+npm install --save-dev babel-preset-es2015
+npm install --save-dev babel-preset-react
+```
 
-###### Installing React
-Now that webpack and babel are setup we need to install react
-npm i react react-dom -S
+###### Creating a react component
+**hello.jsx**
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+ 
+class Hello extends React.Component {
+  render() {
+    return <h1>Hello</h1>
+  }
+}
+ReactDOM.render(<Hello/>, document.getElementById('hello'));
+```
+**world.jsx**
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+ 
+class World extends React.Component {
+  render() {
+    return <h1>World</h1>
+  }
+}
+ 
+ReactDOM.render(<World/>, document.getElementById('world'));
+```
+Adding an index.html file. The JS will render hello world here using react.
+**index.html**
+```
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello React</title>
+  </head>
+  <body>
+    <div id="hello"></div>
+    <div id="world"></div>
+  </body>
+</html>
+```
 
-###### Commiting Node modules
-If you wish to lock down the specific bytes included in a package, for example to have 100% confidence in being able to reproduce a deployment or build, then you ought to check your dependencies into source control, or pursue some other mechanism that can verify contents rather than versions.
-Shannon and Steven mentioned this before but I think, it should be part of the accepted answer.
+###### Bundling with webpack
+Now that we have the 2 JSX files ready we want to serve the final JS file using webpack. For this we first merge the 2 JSX files in main.js file and then supply this to webpack, which will do the bundling for us.
 
-Update
-The source listed for the below recommendation has been updated. They are no longer recommending the node_modules folder be committed.
-Usually, no. Allow npm to resolve dependencies for your packages.
-For packages you deploy, such as websites and apps, you should use npm shrinkwrap to lock down your full dependency tree:
+**main.js**
+```
+import Hello from './hello.jsx';
+import World from './world.jsx';
+```
+Following is the webpack config. Currently we are using only the babel loader but we can use other loaders like sass, coffeescript loader as well if we want to do other transformations.
+```
+var path = require('path');
+var webpack = require('webpack');
+ 
+module.exports = {
+  entry: './main.js',
+  output: { path: __dirname, filename: 'bundle.js' },
+  module: {
+    loaders: [
+      {
+        test: /.jsx?$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        query: {
+          presets: ['es2015', 'react']
+        }
+      }
+    ]
+  },
+};
+```
+
+Including the final file in html
+```
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello React</title>
+  </head>
+  <body>
+    <div id="hello"></div>
+    <div id="world"></div>
+    <script src="bundle.js"></script>
+  </body>
+</html>
+```
+
+###### Serving assets using webpack
+Now start the webpack-dev-server using the following command:
+```
+webpack-dev-server --progress --colors
+```
 
 
-
-
-# SETTING UP REACT WITH EXPRESS
+# SETTING UP REACT WITH EXPRESS 2
 # =======================================================
-Module sharing: how to use Node.js modules also in the browser.
-Universal rendering: how to render the views of the application from the server (during the initialization of the app) and then keep rendering the other views directly in the browser (avoiding a full page refresh) while the user keep navigating across the different sections.
-Universal routing: how to recognize the view associated to the current route from both the server and the browser.
-Universal data retrival: how to access data (typically through APIs) from both the server and the browser.
+**Module sharing**: how to use Node.js modules also in the browser.
+**Universal rendering**: how to render the views of the application from the server (during the initialization of the app) and then keep rendering the other views directly in the browser (avoiding a full page refresh) while the user keep navigating across the different sections.
+**Universal routing**: how to recognize the view associated to the current route from both the server and the browser.
+**Universal data retrival**: how to access data (typically through APIs) from both the server and the browser.
 
-We will also use Babel to take advantage of the lovely EcmaScript 2015 syntax and Webpack to build our code for the browser.
 
 We need npm to install all the stuff
 We will need to have babel, ejs, express, react and react-router installed. To do so you can run the following command:
+```
 npm install --save babel-cli@6.11.x babel-core@6.13.x  babel-preset-es2015@6.13.x babel-preset-react@6.11.x ejs@2.5.x express@4.14.x react@15.3.x react-dom@15.3.x react-router@2.6.x
+```
 
 We will also need to install Webpack(with its Babel loader extension) and http-server as a development dependencies:
 ```
 npm install --save-dev webpack@1.13.x babel-loader@6.2.x http-server@0.9.x
 ```
-
+File Structure
 ```
 ├── package.json
 ├── webpack.config.js
@@ -368,15 +500,6 @@ npm install --save-dev webpack@1.13.x babel-loader@6.2.x http-server@0.9.x
         └──  index.ejs
 ```
 
-package.json - to describe the project and define the dependencies
-webpack.config.js - Webpack configuration file
-static - contains all the static files needed for our application (css, js, images, etc.) and an index.html that we will use initially to test our app.
-views - contains the template that we will use from the server to render the HTML content from the server.
-components - contains all the React components
-data - contains our data "module"
-rendering - app-client.js and server.js
-routes.js - for routing
-
 ###### Basic View
 create and add stuff in src/static/index.html
 ```
@@ -394,7 +517,6 @@ create and add stuff in src/static/index.html
 </body>
 </html>
 ```
-
 
 ###### Javascript Data Module
 Currently just for the sake we are importing data syncornously which otherwise we would have done asynchonously using an API call
@@ -427,9 +549,6 @@ const athletes = [
 { 'year': '2007', 'type': 'G', 'city': 'Rio de Janeiro', 'event': 'Pan American Games', 'category': '-63kg' },
 { 'year': '2007', 'type': 'G', 'city': 'Rio de Janeiro', 'event': 'World Championships', 'category': '-63kg' },
 ],
-},
-{
-// ...
 }
 ];
 export default athletes;
@@ -488,8 +607,7 @@ window.onload = () => {
 };
 ```
 
-
-# Setting Webpack and Babel
+###### Setting Webpack and Babel
 Webpack is a module bundler. Webpack will convert ES2015 and React JSX syntax to equivalent ES5 syntax (using Babel), which can be executed practically by every browser.
 Furthermore we can use Webpack to apply a number of optimizations to the resulting code like combining all the scripts files into one file and minifying the resulting bundle.
 
@@ -550,16 +668,14 @@ The NODE_ENV environment variable and the -p option are used to generate the bun
 NODE_ENV=production node_modules/.bin/webpack -p
 ```
 
-
-# Creating server
+###### Creating server
 We dont have a Node.js web server yet, so for now we can just use the module http-server (previously installed as development dependency) to run a simple static file web server:
 ```
 node_modules/.bin/http-server src/static
 ```
 
-
-# Adding Universal Rendering
-###### Server file for expressJS
+###### Adding Universal Rendering
+Server file for expressJS
 **src/server.js**
 ```
 import path from 'path';
@@ -632,9 +748,12 @@ server.listen(port, err => {
 });
 ```
 
-
-
 https://medium.com/engineering-housing/progressing-mobile-web-fac3efb8b454#.pj1tjx4cm
+
+
+React-Forms
+React-Router
+Other functionaliesi
 
 
 
@@ -783,3 +902,179 @@ classSet addon becomes deprecated
 Example: Transforming create new meetup form example to be 0.13 ready
 Disclaimer: Do not wrap your createClass in createFactory!
 Better way: Leverage CommonJS to simplify wrap-with-factory process
+
+
+
+# React on Rails
+# ===================================================
+Like the react-rails gem, React on Rails is capable of server-side rendering with fragment caching and is compatible with turbolinks. Unlike react-rails, which depends heavily on sprockets and jquery-ujs, React on Rails uses webpack and does not depend on jQuery. 
+- Redux
+- Webpack optimization functionality
+- React Router
+
+Webpack is used to generate several JavaScript "bundles" for inclusion in application.js or directly in your layout.
+This usage of webpack fits neatly and simply into the existing Rails sprockets system and you can include React components on a Rails view with a simple helper.
+Other apps will use separate node server to distribute assets and rails app for only apis.
+
+
+# React Rails
+react-rails makes it easy to use React and JSX in your Ruby on Rails (3.2+) application.
+Provide various react builds to your asset bundle
+Transform .jsx in the asset pipeline
+Render components into views and mount them via view helper & react_ujs
+- Render components server-side with prerender: true
+- Generate components with a Rails generator
+- Be extended with custom renderers, transformers and view helpers
+
+# React on Rails
+Instead of using sprockets it uses webpack for rendering the server assets. Webpack etc is included separately using Procfiles. There are npm modules etc. also present inside, and packages are installed via npm inside the rails directory.
+Like the react-rails gem, React on Rails is capable of server-side rendering with fragment caching and is compatible with turbolinks. Unlike react-rails, which depends heavily on sprockets and jquery-ujs, React on Rails uses webpack and does not depend on jQuery.
+- Redux
+- Webpack optimization functionality
+- React Router
+
+Webpack is used to generate several JavaScript "bundles" for inclusion in application.js or directly in your layout.
+This usage of webpack fits neatly and simply into the existing Rails sprockets system and you can include React components on a Rails view with a simple helper.
+Other apps will use separate node server to distribute assets and rails app for only apis.
+
+
+# React Rails
+# Links
+https://github.com/reactjs/react-rails
+http://blog.arkency.com/rails-react/
+
+react-rails makes it easy to use React and JSX in your Ruby on Rails (3.2+) application.
+Provide various react builds to your asset bundle
+Transform .jsx in the asset pipeline
+Render components into views and mount them via view helper & react_ujs
+- Render components server-side with prerender: true
+- Generate components with a Rails generator
+- Be extended with custom renderers, transformers and view helpers
+
+# ----------------------- Transformers (JSX and Babel transformer for ES6)
+react-rails provides two transformers, React::JSX::JSXTransformer and React::JSX::BabelTransformer.
+Under the hood, react-rails uses ruby-babel-transpiler, for transformation.
+You can use babel's transformers and custom plugins, and pass options to the babel transpiler adding following configurations:
+
+config.react.jsx_transform_options = {
+  blacklist: ['spec.functionName', 'validation.react', 'strict'], # default options
+  optional: ["transformerName"],  # pass extra babel options
+  whitelist: ["useStrict"] # even more options
+}
+
+
+# ----------------------- Server Rendering
+To render components on the server, pass prerender: true to react_component:
+
+<%= react_component('HelloMessage', {name: 'John'}, {prerender: true}) %>
+
+<%= react_component('PACKAGES_PAGE',{
+config: {
+product_service_url_public: Amber.product_service_url_public,
+client_service_url_public: Amber.client_service_url_public,
+fb_login_app_id: Amber.fb_login_app_id,
+google_client_id: Amber.google_client_id
+},
+user:{
+logged_in: loggedin_user?, data: loggedin_user? ? @user_data:{}
+},
+packages: @packages_data,
+services: @services_data,
+browser: @browser,
+addresses: @addresses,
+default_package: @default_package,
+default_service: @default_service,
+editable: @editable,
+defaultProviderId: @default_provider_id
+}, {prerender: true})
+%>
+
+
+becomes
+
+<div data-react-class="HelloMessage" data-react-props="{&quot;name&quot;:&quot;John&quot;}">
+<h1>Hello, John!</h1>
+</div>
+
+react-rails must load your code. By convention, it uses components.js, which was created by the install task. This file must include your components and their dependencies (eg, Underscore.js).
+Your components must be accessible in the global scope.
+Your code can't reference document. Prerender processes don't have access to document, so jQuery and some other libs won't work in this environment :(
+
+
+# ----------------------- JSX Rendering vs direct JS
+JSX compiles into JS
+
+sample using JSX
+var Post = React.createClass({
+propTypes: {
+title: React.PropTypes.string,
+body: React.PropTypes.string,
+published: React.PropTypes.bool,
+publishedBy: React.PropTypes.instanceOf(Person)
+},
+
+render: function() {
+return (
+<div>
+<div>Title: {this.props.title}</div>
+<div>Body: {this.props.body}</div>
+<div>Published: {this.props.published}</div>
+<div>Published By: {this.props.publishedBy}</div>
+</div>
+);
+}
+});
+
+Sample usig JS
+this.Listings = React.createClass({
+render: function() {
+return React.DOM.div({
+className: 'records'
+}, React.DOM.h2({
+className: 'title'
+}, 'Listings'));
+}
+});
+
+React Rails transforms all the JSX into js
+use some_javascript.js.jsx for all the files
+After installing react-rails, restart your server. Now, .js.jsx files will be transformed in the asset pipeline.
+
+# ------------------------ react_component helper method
+react_component(component_class_name, props={}, html_options={})
+react_component('HelloMessage', {name: 'John'}, {prerender: true})
+
+<div data-react-class="HelloMessage" data-react-props="{&quot;name&quot;:&quot;John&quot;}">
+<h1>Hello, John!</h1>
+</div>
+
+component_class_name: is a string which names a globally-accessible component class. It may have dots (eg, "MyApp.Header.MenuItem").
+props: is either an object that responds to #to_json or an already-stringified JSON object (eg, made with Jbuilder, see note below).
+html_options may include:
+tag: to use an element other than a div to embed data-react-class and data-react-props.
+prerender: true to render the component on the server.
+**other Any other arguments (eg class:, id:) are passed through to content_tag.
+
+
+# ------------------------ Customizations
+Custom Server Renderer
+# react-rails depends on a renderer class for rendering components on the server. You can provide a custom renderer class to config.react.server_renderer. The class must implement:
+initialize(options={}), which accepts the hash from config.react.server_renderer_options
+render(component_name, props, prerender_options) to return a string of HTML
+# react-rails provides two renderer classes: React::ServerRendering::ExecJSRenderer and React::ServerRendering::SprocketsRenderer
+
+Custom View Helper
+# react-rails uses a "helper implementation" class to generate the output of the react_component helper. The helper is initialized once per request and used for each react_component call during that request. You can provide a custom helper class to config.react.view_helper_implementation. The class must implement:
+#react_component(name, props = {}, options = {}, &block) to return a string to inject into the Rails view
+#setup(controller_instance), called when the helper is initialized at the start of the request
+#teardown(controller_instance), called at the end of the request
+
+
+Custom JSX Transformer
+# react-rails provides two transformers, React::JSX::JSXTransformer and React::JSX::BabelTransformer.
+
+# More Components
+react_on_rails Gem: Webpack Integration of React with Rails utilizing the modern JavaScript tooling and libraries, including Webpack, Babel, React, Redux, React-Router. You can an example of this live at www.reactrails.com.
+React.rb: Use Ruby to build reactive user interfaces with React under the covers.github source code here.
+react-rails-hot-loader is a simple live-reloader for react-rails.
+react-rails-benchmark_renderer adds performance instrumentation to server rendering.

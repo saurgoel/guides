@@ -2,8 +2,31 @@ http://nodetuts.com/
 http://nodepatternsbooks.com/
 https://anotheruiguy.gitbooks.io/nodeexpreslibsass_from-scratch/content/node-npm.html
 
+Node is based on the Javascript V8 engine that is what browsers use.
+Debugging Javascript
+
 require in JavaScript
 promises in JavaScript
+
+
+
+    npm install will install both "dependencies" and "devDependencies"
+
+    npm install --production will only install "dependencies"
+
+    npm install --dev will only install "devDependencies"
+
+
+
+###### Commiting Node modules
+If you wish to lock down the specific bytes included in a package, for example to have 100% confidence in being able to reproduce a deployment or build, then you ought to check your dependencies into source control, or pursue some other mechanism that can verify contents rather than versions.
+Shannon and Steven mentioned this before but I think, it should be part of the accepted answer.
+
+Update
+The source listed for the below recommendation has been updated. They are no longer recommending the node_modules folder be committed.
+Usually, no. Allow npm to resolve dependencies for your packages.
+For packages you deploy, such as websites and apps, you should use npm shrinkwrap to lock down your full dependency tree:
+
 
 # BASICS
 # =======================================================

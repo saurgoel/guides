@@ -18,6 +18,27 @@ The only thing different here is we used the --save-dev flag which instructs npm
 npm install --save-dev gulp
 ```
 
+# With Babel (ES6)
+Install babel core and presets and add them to the project
+```
+npm install babel-core babel-preset-es2015 --save-dev
+```
+Once this has finished, we need to create a .babelrc config file to enable the es2015 preset:
+```
+touch .babelrc
+```
+And add the following to the file:
+```
+{
+  "presets": ["es2015"]
+}
+```
+We then need to instruct gulp to use Babel. To do this, we need to rename the gulpfile.js to gulpfile.babel.js:
+```
+mv "gulpfile.js" "gulpfile.babel.js"
+```
+
+
 # Setting Up
 ###### Setting Up Our Gulpfile & Running Gulp
 Following are the some example tasks that we will accomplish with sass
@@ -88,8 +109,8 @@ gulp.task('default', ['lint', 'sass', 'scripts', 'watch']);
 ```
 
 ###### Read and Build all inside a directory tree
-The pattern for all files under all directories is usually ./src/less/**/*.* or ./src/less/**/*, either should work.
-Generally speaking, it's better to match specific files extensions — even if they should all be the same — to prevent grabbing system files or other junk. In that case, you can do ./src/less/**/*.less for just .less files, or something like .src/less/**/*.{less,css} for both .less and .css files.
+The pattern for all files under all directories is usually ./src/less/*/.* or ./src/less/*/, either should work.
+Generally speaking, it's better to match specific files extensions — even if they should all be the same — to prevent grabbing system files or other junk. In that case, you can do ./src/less//*.less for just .less files, or something like .src/less/**/*.{less,css} for both .less and .css files.
 
 ###### Run specific tasks
 For example running the sass task

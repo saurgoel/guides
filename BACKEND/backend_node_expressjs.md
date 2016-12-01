@@ -1198,6 +1198,73 @@ router.delete('/:id', function(req, res){
 module.exports = router;
 ```
 
+# RUNNING AND AUTOMATING RESTARTS
+# =======================================================
+###### Basic Running
+```
+node src/server.js
+```
+
+You can also specify commands in the package.json and then run it using the npm run command
+```
+//Add it to package.json's script 
+“scripts”: {
+ “build”: “webpack --config webpack.config.prod.js -p”,
+ ...
+ }
+npm run build
+```
+
+###### Running with Babel (ES6)
+For this install babel-node package
+NODE_ENV=production node_modules/.bin/babel-node --presets 'react,es2015' src/server.js
+babel-watch was made to be compatible with babel-node and nodemon options. Not all of them are supported yet, here is a short list of supported command line options:
+
+**-d, --debug [port]** Start debugger on port
+**-o, --only [globs]** Matching files will be transpiled
+**-i, --ignore [globs]** Matching files will not be transpiled
+**-e, --extensions [extensions]** List of extensions to hook into [.es6,.js,.es,.jsx]
+-p, --plugins [string]
+-b, --presets [string]
+**-w, --watch [dir]** Watch directory "dir" or files. Use once for each directory or file to watch
+**-x, --exclude [dir]** Exclude matching directory/files from watcher. Use once for each directory or file.
+**-L, --use-polling** In some filesystems watch events may not work correcly. This option enables "polling" which should mitigate this type of issues
+**-D, --disable-autowatch** Don't automatically start watching changes in files "required" by the program
+**-H, --disable-ex-handler** Disable source-map-enhanced uncaught exception handler. (you may want to use this option in case your app registers a custom uncaught exception handler)
+
+
+###### Running with monitoring changes and ES6
+
+Running with monitoring changes
+Most of us are probably used to saving a file in the editor, hit [CTRL+C] to stop the application and then restart it by pressing the [UP] arrow and [Enter]. However you can automate this repetitive task and make your development process easier by using existing tools such as:
+
+    nodemon
+    node-supervisor
+    forever
+
+###### Nodemon
+What these modules do is to watch for file changes and restart the server for you. Let us take nodemon for example. First you install it globally:
+```
+sudo npm i nodemon -g
+```
+Then you should simply swap the node command for the nodemon command:
+```
+$ nodemon server.js
+  14 Nov 21:23:23 - [nodemon] v1.2.1
+  14 Nov 21:23:23 - [nodemon] to restart at any time, enter `rs`
+  14 Nov 21:23:23 - [nodemon] watching: *.*
+  14 Nov 21:23:23 - [nodemon] starting `node server.js`
+  14 Nov 21:24:14 - [nodemon] restarting due to changes...
+  14 Nov 21:24:14 - [nodemon] starting `node server.js`
+```
+
+Among the existing options for nodemon or node-supervisor, probably the most popular one is to ignore specific files or folders.
+
+**Guide**
+https://github.com/remy/nodemon
+
+https://strongloop.com/strongblog/comparison-tools-to-automate-restarting-node-js-server-after-code-changes-forever-nodemon-nodesupervisor-nodedev/
+
 
 # STORING IN FILES
 # =======================================================
@@ -1240,35 +1307,6 @@ Xtend is a utility library that makes it easy to copy properties from one JavaSc
 https://www.airpair.com/node.js/posts/top-10-mistakes-node-developers-make
 http://kb.imakewebsites.ca/2014/01/04/new-node-wishlist/
 
-# AUTOMATING RESTARTS
-Most of us are probably used to saving a file in the editor, hit [CTRL+C] to stop the application and then restart it by pressing the [UP] arrow and [Enter]. However you can automate this repetitive task and make your development process easier by using existing tools such as:
-
-    nodemon
-    node-supervisor
-    forever
-
-###### Nodemon
-What these modules do is to watch for file changes and restart the server for you. Let us take nodemon for example. First you install it globally:
-```
-sudo npm i nodemon -g
-```
-Then you should simply swap the node command for the nodemon command:
-```
-$ nodemon server.js
-  14 Nov 21:23:23 - [nodemon] v1.2.1
-  14 Nov 21:23:23 - [nodemon] to restart at any time, enter `rs`
-  14 Nov 21:23:23 - [nodemon] watching: *.*
-  14 Nov 21:23:23 - [nodemon] starting `node server.js`
-  14 Nov 21:24:14 - [nodemon] restarting due to changes...
-  14 Nov 21:24:14 - [nodemon] starting `node server.js`
-```
-
-Among the existing options for nodemon or node-supervisor, probably the most popular one is to ignore specific files or folders.
-
-**Guide**
-https://github.com/remy/nodemon
-
-https://strongloop.com/strongblog/comparison-tools-to-automate-restarting-node-js-server-after-code-changes-forever-nodemon-nodesupervisor-nodedev/
 
 # UNIT TESTS
 
