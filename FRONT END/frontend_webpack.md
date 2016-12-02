@@ -331,6 +331,7 @@ module.exports = config;
 Instead of the above we can directly use the global ___dir.
 
 **entry** — name of the top level file or set of files that we want to include in our build, can be a single file or an array of files. In our build, we only pass in our main file (app.js).
+If you need multiple bundles for multiple HTML pages you can use the “multiple entry points” feature. It will build multiple bundles at once. Additional chunks can be shared between these entry chunks and modules are only built once.
 Entry tells the Webpack where the root module or the starting point is. This can be a String, an Array or an Object. This could confuse you but the different types are used for different purposes. If you have a single starting point (like most apps), you can use any format and the result will be the same.
 But, if you want to append multiple files that are NOT dependent on each other, you can use the Array format.
 ```
@@ -667,11 +668,31 @@ https://github.com/webpack/docs/wiki/cli
      </body>
  </html>
 ```
-How to enable live reloading of assets?
+
+###### Webpack Watch mode
+With watchmode, Webpack will watch your files and when one of them changes, it will immediately rerun the build and recreate your output file.
+Use it via the command line
+```
+webpack --watch
+```
+
+or add it to the config
+```
+module.exports = {
+  entry: "./app.js",
+  output: {
+    filename: "bundle.js"
+  }, 
+  watch: true
+}
+```
+
+**How to enable live reloading of assets?**
 webpack cli (webpack-cli) or webpack api (webpack) at barebones is for running just on the files (converting just one file into output). 
 
 In development environment, generally we make changes to our files and want to recompile the assets as the file changes. In the browser, when we now refresh, ew can see the new assets. This is called **live reloading**.
 There is another advanced thing that can be done, called hot reloading. Whenever we change assets, along with the files being changed the browser is also updated without any reloading of page. This is called **hot reloading**.
+
 
 **Remember**, these are just used for development purposes, as in production all the assets will be precompiled and then served. We don't want any other functionality there. We just want to bundle our assets using the webpack command and then serve them using our normal express server.
 
@@ -950,8 +971,89 @@ app.get('*', function response(req, res) {
 app.listen(3000);  
 ```
 
+# Handling Stylesheets
+# ============================================
+###### Basic Setup (Inline css Stylesheets)
+In the basic setup you can just embed css directly into the JS and dont need to make a separate bundled file. The styles would get rendered easily.
+**app/main.css**
+```
+body {
+  background: cornsilk;
+}
+```
 
-###### Hot Loading Styles
+Require it so that webpack can find it.
+**app/index.js**
+```
+require('./main.css');
+```
+
+**css**
+```
+loaders: [
+        {
+          test: /\.css$/,
+          loaders: ['style', 'css'],
+          include: paths
+        }
+]
+```
+In this case, css-loader gets evaluated first, then style-loader. css-loader will resolve @import and url statements in our CSS files. style-loader deals with require statements in our JavaScript. A similar approach works with CSS preprocessors, like Sass and Less, and their loaders.
+
+###### Basic Setup (Inline scss Stylesheets)
+For support of scss add the scss loader and it will start to work
+```
+{
+	test: /\.scss$/,
+	loaders: [ 'style', 'css', 'sass' ]
+}
+```
+
+###### Separate CSS Bundle/Files
+Even though we have a nice build set up now, where did all the CSS go? As per our configuration, it has been inlined to JavaScript! Even though this can be convenient during development, it doesn't sound ideal. The current solution doesn't allow us to cache CSS. In some cases we might suffer from a Flash of Unstyled Content (FOUC).
+Webpack provides a means to generate a separate CSS bundle. We can achieve this using the ExtractTextPlugin. It comes with overhead during the compilation phase, and it won't work with Hot Module Replacement (HMR) by design. Given we are using it only for production, that won't be a problem.
+
+###### Modular and Contained CSS
+Let’s now write a small Button component, it’ll have some SCSS styles, an HTML template, and some behavior. So we’ll install the things we need. We’ll need loaders for Sass and HTML files. Also, as results are piped from one loader to another, we’ll need a CSS loader to handle the results of the Sass loader. Now, once we have our CSS, there are multiple ways to handle them, for now we’ll use a loader called the style-loader which takes a piece of CSS and injects it into the page dynamically.
+A short description of CSS Modules is that each CSS file you create has a local scope. Just like a JavaScript module has its local scope. The way it works is:
+
+**App.css**
+```
+.header {
+  color: red;
+}
+```
+**App.js**
+```
+import styles from './App.css';
+
+export default function (props) {
+
+  return <h1 className={styles.header}>Hello world!</h1>;
+
+};
+```
+You also have to update the config:
+```
+import path from 'path';
+const config = {  
+  ...
+  module: {
+    loaders: [{
+      test: /.js?$/,
+      exclude: /node_modules/,
+      loader: 'babel'
+    }, {
+      test: /.css?$/,
+      loader: 'style!css?modules&localIdentName=[name]---[local]---[hash:base64:5]'
+    }]
+  }
+};
+```
+
+So you only use classes and those classes can be referenced by name when you import the css file. The thing here now is that this .header class is not global. It will only work on JavaScript modules importing the file. This is fantastic news because now you get the power of CSS. :hover, [disabled], media queries, etc. but you reference the rules with JavaScript.
+
+###### CSS loaders with Hot Replacement
 First we add a new loader to our project. This makes Webpack understand what CSS is. Specifically it will understand what a url means. It will treat this as any other require, import, etc. statement. But we do not just want to understand CSS, we also want to add it to our page. With npm install style-loader we can add behavior to our CSS loading.
 ```
 import path from 'path';
@@ -990,53 +1092,7 @@ const config = {
 ```
 
 In our config we tell Webpack to first run the css-loader and then the style-loader, it reads right to left. The css-loader makes any urls within it part of our dependency graph and the style-loader puts a style tag for the CSS in our HTML.
-
 So now you see that we do not only process files with Webpack, we can create side effects like creating style tags. With the HOT middleware, we can even run these side effects as we change the code of the app. That means every time you change some CSS Webpack will just update the existing style tag on the page, without a refresh.
-
-
-# CSS Modules
-# ============================================
-Let’s now write a small Button component, it’ll have some SCSS styles, an HTML template, and some behavior. So we’ll install the things we need. We’ll need loaders for Sass and HTML files. Also, as results are piped from one loader to another, we’ll need a CSS loader to handle the results of the Sass loader. Now, once we have our CSS, there are multiple ways to handle them, for now we’ll use a loader called the style-loader which takes a piece of CSS and injects it into the page dynamically.
-A short description of CSS Modules is that each CSS file you create has a local scope. Just like a JavaScript module has its local scope. The way it works is:
-
-**App.css**
-```
-.header {
-  color: red;
-}
-```
-
-**App.js**
-```
-import styles from './App.css';
-
-export default function (props) {
-
-  return <h1 className={styles.header}>Hello world!</h1>;
-
-};
-```
-
-You also have to update the config:
-```
-import path from 'path';
-const config = {  
-  ...
-  module: {
-    loaders: [{
-      test: /.js?$/,
-      exclude: /node_modules/,
-      loader: 'babel'
-    }, {
-      test: /.css?$/,
-      loader: 'style!css?modules&localIdentName=[name]---[local]---[hash:base64:5]'
-    }]
-  }
-};
-```
-
-So you only use classes and those classes can be referenced by name when you import the css file. The thing here now is that this .header class is not global. It will only work on JavaScript modules importing the file. This is fantastic news because now you get the power of CSS. :hover, [disabled], media queries, etc. but you reference the rules with JavaScript.
-
 
 
 # Long Term Caching

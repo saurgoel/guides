@@ -7,7 +7,7 @@ To make it faster, React implements a virtual DOM that is basically a DOM tree r
 The rationale for this is that JavaScript is very fast and its worth keeping a DOM tree in it to speedup its manipulation.
 React is not a framework though. Think of it as the "View" in your traditional MVC framework.
 
-Isomorphic vs Universal Javascript
+###### Isomorphic vs Universal Javascript
 
 React.js is the new popular guy around the "JavaScript Frameworks" block, and it shines for its simplicity. Where other frameworks implement a complete MVC framework, we could say React only implements the V (in fact, some people replace their framework's V with React). React applications are built over 2 main principles: Components and States. Components can be made of other smaller components, built-in or custom; the State drives what the guys at Facebook call one-way reactive data flow, meaning that our UI will react to every change of state.
 One of the good things about React is that it doesn't require any additional dependencies, making it pluggable with virtually any other JS library. Taking advantage of this feature, we are going to include it into our Rails stack to build a frontend-powered application, or you might say, a Rails view on steroids.
@@ -73,15 +73,9 @@ I’m an Angular fan just like everybody else, but one pain point is the potenti
 But I thought Google executes and indexes javascript?
 Yeah, not really. They just give you an opportunity to serve up static HTML. You still have to generate that HTML with PhantomJS or a third party service.
 
-###### JSX
-JSX is an HTML alike syntax that compiles down to JavaScript. For JSX, markup and codes are composed in the same file. 
-This means code completion gives you a helping hand as you type references to your component’s functions and variables. 
-In contrast, AngularJS’s string-based templates come with the usual downsides: There is no code coloring in many editors, limited code completion support, and run-time failures. Hence ReactJS is ahead in this.
-
 ###### Virtual DOM
 App --- Virtual DOM --- DOM
 ReactJS creates its own virtual DOM where your components are kept. This approach gives developers high flexibility and amazing performance gains because ReactJS calculates what change is needed to be made in the virtual DOM in advance and updates the DOM-trees accordingly. In this fashion, ReactJS  avoids the costly DOM operations and does updates in a very efficient manner.
-
 
 ###### ReactJs vs AngularJS
 However, ReactJS is SEO friendly, real time and compatible with heavy traffic. Whereas, AngularJS offers easy development and testing along with reliability.
@@ -90,26 +84,56 @@ React is amazing on the client side, but it’s ability to be rendered on the se
 
 # JSX
 # =======================================================
-In JSX
-```
-var Hello = React.createClass({
-render: function() {
-return <div>Hello {this.props.name}</div>;
-}
-});
-React.render(<Hello name='World' />, document.getElementById('container'));
-```
+JSX is a preprocessor step that adds XML syntax to JavaScript. You can definitely use React without JSX but JSX makes React a lot more elegant.
+Just like XML, JSX tags have a tag name, attributes, and children. If an attribute value is enclosed in quotes, the value is a string. Otherwise, wrap the value in braces and the value is the enclosed JavaScript expression.
+JSX is a statically-typed, object-oriented programming language compiling to standalone JavaScript. The reason why JSX was developed is our need for a more robust programming language than JavaScript. JSX is, however, fairly close to JavaScript especially in its statements and expressions. 
+Also, another important reason why JSX was developed is to boost JavaScript performance. JavaScript itself is not so slow but large-scale development tends to have many abstraction layers, e.g. proxy classes and accessor methods, which often have negative impact on performance. JSX boosts performance by inline expansion: function bodies are expanded to where they are being called, if the functions being called could be determined at compile-time. This is the power of the statically-typed language in terms of performance. 
+JSX is an HTML alike syntax that compiles down to JavaScript. For JSX, markup and codes are composed in the same file. 
+This means code completion gives you a helping hand as you type references to your component’s functions and variables. 
+In contrast, AngularJS’s string-based templates come with the usual downsides: There is no code coloring in many editors, limited code completion support, and run-time failures. Hence ReactJS is ahead in this.
 
+###### Installing JSX
+npm install -g jsx
+
+###### Sample JSX file
+class _Main {
+    static function main(args : string[]) : void {
+        log "Hello, world!";
+    }
+}
+
+###### Running JSX
+jsx --run hello.jsx
+
+###### Comparing JSX syntax
+**In JSX**
+```
+<div className="red">Children Text</div>;
+<MyCounter count={3 + 5} />;
+
+// Here, we set the "scores" attribute below to a JavaScript object.
+var gameScores = {
+  player1: 2,
+  player2: 5
+};
+<DashboardUnit data-index="2">
+  <h1>Scores</h1>
+  <Scoreboard className="results" scores={gameScores} />
+</DashboardUnit>;
+```
 This gets transpiled into
 ```
-var Hello = React.createClass({displayName: "Hello",
-render: function() {
-return React.createElement("div", null, "Hello ", this.props.name);
-}
-});
-React.render(React.createElement(Hello, {name: "World"}), document.getElementById('container'));
-```
+React.createElement("div", { className: "red" }, "Children Text");
+React.createElement(MyCounter, { count: 3 + 5 });
 
+React.createElement(
+  DashboardUnit,
+  { "data-index": "2" },
+  React.createElement("h1", null, "Scores"),
+  React.createElement(Scoreboard, { className: "results", scores: gameScores })
+);
+```
+You'll notice that React uses className instead of the traditional DOM class. From the docs, "Since JSX is JavaScript, identifiers such as class and for are discouraged as XML attribute names. Instead, React DOM components expect DOM property names like className and htmlFor, respectively."
 
 # PROPERTIES
 # =======================================================
@@ -130,7 +154,6 @@ var Book = React.createClass({
 	});
 React.render(<Book data={data}/>, document.getElementById('container'));
 ```
-
 Everything in this.props is passed down to you from the parent. That includes the values that were declared in the element attributes, just like in regular HTML where you declare attributes like class or href
 
 
@@ -230,14 +253,15 @@ const defaultState = {
 # =======================================================
 There are two types of component. These types are not just react-based but can be visualized in any other component-based UI library or framework. They include:
 
-Presentation Component: These are contained components that are responsible for UI. They are composed with JSX and rendered using the render method. The key rule about this type of component is that they are stateless meaning that no state of any sort is needed in such components. Data is kept in sync using props.
+**Presentation Component:** These are contained components that are responsible for UI. They are composed with JSX and rendered using the render method. The key rule about this type of component is that they are stateless meaning that no state of any sort is needed in such components. Data is kept in sync using props.
 If all that a presentation component does is render HTML based on props, then you can use stateless function to define the component rather than classes.
 
-Container Component: This type of component complements presentation component by providing states. Its always the guy at the top of the family tree, making sure that data is coordinated.
+**Container Component:** This type of component complements presentation component by providing states. Its always the guy at the top of the family tree, making sure that data is coordinated.
 You do not necessarily need a state management tool outside of what React provides if what you are building does not have too much nested children and less complex. A To-Do is is simple so we can do with what React offers for now provided we understand how and when to use a presentation or container component
 
-In React, components are the individual building blocks of how your data is viewed. You write components to handle how your data should look and to automatically render state changes. When you create a component, you define all of this by overriding React.Component’s render function.
+In React, components are the individual building blocks of how your data is viewed. You write components to handle how your data should look and to automatically render state changes. When you create a component, you define all of this by overriding **React.Component’s render function**.
 
+**With ES6 and JSX**
 ```
 import React from 'react';
  
@@ -247,7 +271,6 @@ class Hello extends React.Component {
   }
 }
 ```
-
 First off, we have ES6 import statements and class definitions, which makes our code more concise by not having to call React.createClass. But there is also some funky looking inline HTML type stuff in the component class definition’s render function. This XML-like syntax being returned from the function is called JSX. It was designed to make building React components easier because it is concise and familiar for defining tree structures with attributes.
 
 All of this new syntax might look a bit strange, but don’t worry because in just a bit well use Babel to transpile both the ES6 syntax and the JSX syntax into ES5 JavaScript that can be run in a browser.
@@ -265,41 +288,38 @@ var Hello = React.createClass({displayName: 'Hello',
 
 **Rendering**
 Now that we have our component class, we need to add some code to “mount” this component to a DOM element. This will take our React component and render it to display within an element of an HTML page. To do this we import the React DOM and call its render function, passing in a component object as well as an actual DOM element to attach to.
-
 ```
 var Books = React.createClass({
-render: function() {
-return (
-<table>
-<thead>
-<tr>
-<th>Title</th>
-</tr>
-</thead>
-<tbody>
-<Book title='Professional Node.js'></Book>
-<Book title='Node.js Patterns'></Book>
-</tbody>
-</table>
-);
-}
+	render: function() {
+	return (
+		<table>
+			<thead>
+				<tr>
+					<th>Title</th>
+				</tr>
+			</thead>
+			<tbody>
+				<Book title='Professional Node.js'></Book>
+				<Book title='Node.js Patterns'></Book>
+			</tbody>
+		</table>
+		);
+	}
 });
 
 var Book = React.createClass({
-render: function() {
-return (
-<tr>
-<td>{this.props.title}</td>
-</tr>
-);
-}
+	render: function() {
+		return (
+			<tr>
+				<td>{this.props.title}</td>
+			</tr>
+		);
+	}
 });
 
 React.render(<Books />, document.getElementById('container'));
 ```
-
 Components are a very useful way to compose and reuse views (and logic).
-
 
 # EVENT ARCHITECTURES BASED ON REACT
 # =======================================================
@@ -323,8 +343,6 @@ If you start directly with Redux, you may end up with over-engineered code, code
 Flux is a general framework for laying out how data flows and state changes in your application. Redux is one implementation (the best, in my opinion) of the concept of flux.
 They are both conceptually independent of React, although the top-down data flow that flux enables is very complimentary to how React prefers that data flows.
 So, to answer your question, learn Redux with React.
-
-
 
 
 # SETTING UP REACT ON EXPRESS 1
@@ -398,6 +416,32 @@ Adding an index.html file. The JS will render hello world here using react.
 </html>
 ```
 
+Another Example
+**hello.js**
+```
+import React from "react";
+
+export default React.createClass({
+ render: function() {
+   return (
+     <div>
+         Hello, {this.props.name}!
+     </div>
+   );
+ },
+});
+```
+**app.js**
+```
+import React from "react";
+import ReactDOM from "react-dom";
+import Hello from "./hello";
+
+ReactDOM.render(
+  <Hello name="World" />,
+  document.body
+);
+```
 ###### Bundling with webpack
 Now that we have the 2 JSX files ready we want to serve the final JS file using webpack. For this we first merge the 2 JSX files in main.js file and then supply this to webpack, which will do the bundling for us.
 

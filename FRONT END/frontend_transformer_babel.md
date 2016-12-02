@@ -10,7 +10,7 @@ npm i babel-loader babel-preset-es2015 babel-preset-react -S
 # The next step is telling Webpack (webpack.config.js) to use the babel-loader while bundling the files
 
 var config = {
-  # // Existing Code ....
+# // Existing Code ....
   module : {
     loaders : [
       {
