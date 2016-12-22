@@ -496,6 +496,16 @@ run gulp
 gulp
 ```
 
+http://stackoverflow.com/questions/33561272/task-runners-gulp-grunt-etc-and-bundlers-webpack-browserify-why-use-toge
+Grunt and Gulp are actually task runners, and they have differences like config driven tasks versus stream based transformations. Each has its own strengths and weaknesses, but at the end of the day, they pretty much help you create tasks that can be run to solve a larger build problem. Most of the time, they have nothing to do with the actual run-time of the app, but rather they transform or they put files, configs and other things in place so that the run time works as expected. Sometimes they even spawn servers or other processes that you need to run your app.
+
+Webpack and Browserify are package bundlers. Basically, they are designed to run through all of a package's dependencies and concatenate their source into one file that (ideally) can be used in a browser. They are important to modern web development, because we use so many libraries that are designed to run with Node.js and the v8 compiler. Again, there are pros and cons and different reasons some developers prefer one or the other (or sometimes both!). Usually the output bundles of these solutions contain some sort of bootstrapping mechanisms to help you get to the right file or module in a potentially huge bundle.
+
+The blurred line between runners and bundlers might be that bundlers can also do complex transformations or trans-pilations during their run-time, so they can do several things that task runners can do. In fact, between browserify and webpack there's probably around a hundred transformers that you can use to modify your source code. For comparison, there's at least 2000 gulp plugins listed on npm right now. So you can see that there are clear (hopefully... ;)) definitions of what works best for your application.
+
+That being said, you might see a complex project actually using both task-runners and package bundlers at the same time or in tandem. For example at my office, we use gulp to start our project, and webpack is actually run from a specific gulp task that creates the source bundles that we need to run our app in the browser. And because our app is isomorphic, we also bundle some of the server code.
+
+
 # TASK RUNNERS - GRUNT
 # =======================================================
 So, when Gulp came out, I was right at the point of willing to dive deep into JS-based task runners. 

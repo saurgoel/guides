@@ -1234,7 +1234,6 @@ babel-watch was made to be compatible with babel-node and nodemon options. Not a
 
 
 ###### Running with monitoring changes and ES6
-
 Running with monitoring changes
 Most of us are probably used to saving a file in the editor, hit [CTRL+C] to stop the application and then restart it by pressing the [UP] arrow and [Enter]. However you can automate this repetitive task and make your development process easier by using existing tools such as:
 

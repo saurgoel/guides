@@ -1,10 +1,9 @@
 # About
 # ============================================
 Today’s websites are evolving into web apps:
-
-    More and more JavaScript is being used.
-    Modern browsers are offering a wider range of interfaces.
-    Fewer full page reloads → even more code in a page.
+- More and more JavaScript is being used.
+- Modern browsers are offering a wider range of interfaces.
+- Fewer full page reloads → even more code in a page.
 
 As a result there is a lot of code on the client side!
 A big code base needs to be organized. Module systems offer the option to split your code base into modules.
@@ -22,36 +21,51 @@ Now with nodeJs there is javascript on the server side and client side. Both of 
 On server all the files are buit first (using something like gulp) that transpiles files in coffee-script, applies babel transformation if needed etc and then throws them into the build directory where we run it using 
 npm server.js 
 where server.js is barebones javascript (with all the require.js fully loaded)
-
 Same is there on the client side as well.
 
-###### Module system styles
+###### Indepth
+Webpack is a module bundler which takes modules with dependencies and generates static assets by bundling them together based on some configuration.
+The support of loaders in Webpack makes it a perfect fit for using it along with React and we will discuss it later in this post with more details.
+Webpack is a build tool that puts all of your assets, including Javascript, images, fonts, and CSS, in a dependency graph. Webpack lets you use require() in your source code to point to local files, like images, and decide how they're processed in your final Javascript bundle, like replacing the path with a URL pointing to a CDN.
+If you're building a complex Front End™ application with many non-code static assets such as CSS, images, fonts, etc, then yes, Webpack will give you great benefits.
+If your application is fairly small, and you don't have many static assets and you only need to build one Javascript file to serve to the client, then Webpack might be more overhead than you need.
+Use webpack to bundle the backend and frontend parts of the application
+Example of the code splitting feature offered by webpack
+
+**Process**
+- Split the dependency tree into chunks loaded on demand
+- Keep initial loading time low
+- Every static asset should be able to be a module
+- Ability to integrate 3rd-party libraries as modules
+- Ability to customize nearly every part of the module bundler
+- Suited for big projects
+
+
+# Existing solutions of Bundling
+# ============================================
 There are multiple standards for how to define dependencies and export values:
+- <script>-tag style (without a module system)
+- CommonJS
+- AMD and some dialects of it
+- ES6 modules
 
-    <script>-tag style (without a module system)
-    CommonJS
-    AMD and some dialects of it
-    ES6 modules
-    and more…
-
-<script>-tag style
-
+###### <script>-tag style
+**Javascript is loaded syncronously**
+http://www.krux.com/blog/krux-engineers/synchronous-versus-asynchronous-tags-whats-the-big-deal/
+http://stackoverflow.com/questions/8996852/load-and-execute-order-of-scripts
 This is how you would handle a modularized code base if you didn’t use a module system.
-
 ```
 <script src="module1.js"></script>
 <script src="module2.js"></script>
 <script src="libraryA.js"></script>
 <script src="module3.js"></script>
 ```
-
 Modules export an interface to the global object, i. e. the window object. Modules can access the interface of dependencies over the global object.
 Common problems
-
-    Conflicts in the global object.
-    Order of loading is important.
-    Developers have to resolve dependencies of modules/libraries.
-    In big projects the list can get really long and difficult to manage.
+- Conflicts in the global object.
+- Order of loading is important.
+- Developers have to resolve dependencies of modules/libraries.
+- In big projects the list can get really long and difficult to manage.
 
 Once you understand what Webpack does that’s most likely the second question that will come to mind: what possible benefits could this approach have? “Images and CSS? In my JS? What the hell man?”. Well consider this: for a long while we’ve been taught and trained to concatenate all the things into one single file; to be very preserving about our HTTP requests, yada yada.
 
@@ -59,172 +73,7 @@ This has led to one big downside which is that most people nowadays bundle all t
 
 Neither approaches are right, nor wrong. Consider Webpack a middleground– it’s not just a build system or a bundler, it’s a wicked smart module packing system. Once properly configured, it’ll know more about your stack then even you do, and it’ll know better than you how to best optimize it.
 
-# Existing solutions
-###### CommonJs: synchronous require
-This style uses a synchronous require method to load a dependency and return an exported interface. A module can specify exports by adding properties to the exports object or setting the value of module.exports.
-
-```
-require("module");
-require("../file.js");
-exports.doStuff = function() {};
-module.exports = someValue;
-```
-
-It’s used server-side by node.js.
-**Pros**
-- Server-side modules can be reused.
-- There are already many modules written in this style (npm).
-- Very simple and easy to use.
-
-**Cons**
-- Blocking calls do not apply well on networks. Network requests are asynchronous.
-- No parallel require of multiple modules
-
-###### Implementations
-    node.js - server-side
-    browserify
-    modules-webmake - compile to one bundle
-    wreq - client-side
-
-AMD: asynchronous require
-
-Asynchronous Module Definition
-
-Other module systems (for the browser) had problems with the synchronous require (CommonJS) and introduced an asynchronous version (and a way to define modules and exporting values):
-
-require(["module", "../file"], function(module, file) { /* ... */ });
-define("mymodule", ["dep1", "dep2"], function(d1, d2) {
-  return someExportedValue;
-});
-
-Pros
-
-    Fits the asynchronous request style in networks.
-    Parallel loading of multiple modules.
-
-Cons
-
-    Coding overhead. More difficult to read and write.
-    Seems to be some kind of workaround.
-
-Implementations
-
-    require.js - client-side
-    curl - client-side
-
-Read more about CommonJS and AMD.
-ES6 Modules
-
-ECMAScript 2015 (6th Edition), adds some language constructs to JavaScript, which form another module system.
-
-import "jquery";
-export function doStuff() {}
-module "localModule" {}
-
-Pros
-
-    Static analysis is easy.
-    Future-proof as ES standard.
-
-Cons
-
-    Native browser support will take time.
-    Very few modules in this style.
-
-
-
-# Chunked Transferring
-Modules should be executed on the client, so they must be transferred from the server to the browser.
-There are two extremes when transferring modules:
-    1 request per module
-    All modules in one request
-
-Both are used in the wild, but both are suboptimal:
-
-    1 request per module
-        Pro: only required modules are transferred
-        Con: many requests means much overhead
-        Con: slow application startup, because of request latency
-    All modules in one request
-        Pro: less request overhead, less latency
-        Con: not (yet) required modules are transferred too
-
-###### Chunked transferring
-A more flexible transferring would be better. A compromise between the extremes is better in most cases.
-→ While compiling all modules: Split the set of modules into multiple smaller batches (chunks).
-This allows for multiple smaller, faster requests. The chunks with modules that are not required initially can be loaded on demand. This speeds up the initial load but still lets you grab more code when it will actually be used.
-The “split points” are up to the developer.
-→ A big code base is possible!
-Note: The idea is from Google’s GWT.
-Read more about Code Splitting.
-
-
-# Why only JavaScript?
-Why should a module system only help the developer with JavaScript? There are many other resources that need to be handled:
-
-    stylesheets
-    images
-    webfonts
-    html for templating
-    etc.
-
-Or translated/processed:
-
-    coffeescript → javascript
-    elm → javascript
-    less stylesheets → css stylesheets
-    jade templates → javascript which generates html
-    i18n files → something
-    etc.
-
-This should be as easy as:
-
-require("./style.css");
-
-require("./style.less");
-require("./template.jade");
-require("./image.png");
-
-
-# Indepth
-Webpack is a module bundler which takes modules with dependencies and generates static assets by bundling them together based on some configuration.
-The support of loaders in Webpack makes it a perfect fit for using it along with React and we will discuss it later in this post with more details.
-Webpack is a build tool that puts all of your assets, including Javascript, images, fonts, and CSS, in a dependency graph. Webpack lets you use require() in your source code to point to local files, like images, and decide how they're processed in your final Javascript bundle, like replacing the path with a URL pointing to a CDN.
-If you're building a complex Front End™ application with many non-code static assets such as CSS, images, fonts, etc, then yes, Webpack will give you great benefits.
-If your application is fairly small, and you don't have many static assets and you only need to build one Javascript file to serve to the client, then Webpack might be more overhead than you need.
-
-Use webpack to bundle the backend and frontend parts of the application
-Example of the code splitting feature offered by webpack
-
-Process
-    Split the dependency tree into chunks loaded on demand
-    Keep initial loading time low
-    Every static asset should be able to be a module
-    Ability to integrate 3rd-party libraries as modules
-    Ability to customize nearly every part of the module bundler
-    Suited for big projects
-
-In the early days, we "managed" Javascript dependencies by including files in a specific order:
-```
-<script src="jquery.min.js"></script>
-<script src="jquery.some.plugin.js"></script>
-<script src="main.js"></script>
-```
-# All assets are basically treated as modules
-What this means more precisely is that instead of building all your Sass files, and optimizing all your images, and including them on one side, then bundling all your modules, and including them on your page on another, you have this:
-
-```
-import stylesheet from 'styles/my-styles.scss';
-import logo from 'img/my-logo.svg';
-import someTemplate from 'html/some-template.html';
-
-console.log(stylesheet); // "body{font-size:12px}"
-console.log(logo); // "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5[...]"
-console.log(someTemplate) // "<html><body><h1>Hello</h1></body></html>"
-```
-All your assets are considered modules themselves, that can be imported, modified, manipulated, and that ultimately can be packed into your final bundle.
-
-# Requiring Javascript Files
+###### Requiring Javascript Files
 We graduated to concatenating and minifying our scripts in a build step:
 **Old Method of Combining (like we did in rails)**
 ```
@@ -242,9 +91,146 @@ This still relied on the order of concatenated files. Even worse, the code could
 Now we use CommonJS or ES6 modules to put our Javascript in a true dependency graph.
 The browser doesn't support require(), so we use a build tool to transform the above files into a "bundled" file that the browser can execute properly.
 
-Server Side Javascript
+###### Method 1 - CommonJs: synchronous require
+This style uses a synchronous require method to load a dependency and return an exported interface. A module can specify exports by adding properties to the exports object or setting the value of module.exports.
 
-Client Side Javascript
+```
+require("module");
+require("../file.js");
+exports.doStuff = function() {};
+module.exports = someValue;
+```
+
+It’s used server-side by node.js.
+**Pros**
+- Server-side modules can be reused.
+- There are already many modules written in this style (npm).
+- Very simple and easy to use.
+  **Cons**
+- Blocking calls do not apply well on networks. Network requests are asynchronous.
+- No parallel require of multiple modules
+
+###### Implementations
+- node.js - server-side
+- browserify
+- modules-webmake - compile to one bundle
+- wreq - client-side
+
+###### Method 2 - AMD: asynchronous require
+Asynchronous Module Definition
+Other module systems (for the browser) had problems with the synchronous require (CommonJS) and introduced an asynchronous version (and a way to define modules and exporting values):
+```
+require(["module", "../file"], function(module, file) { /* ... */ });
+define("mymodule", ["dep1", "dep2"], function(d1, d2) {
+  return someExportedValue;
+});
+```
+**Pros**
+- Fits the asynchronous request style in networks.
+- Parallel loading of multiple modules.
+  **Cons**
+- Coding overhead. More difficult to read and write.
+- Seems to be some kind of workaround.
+  **Implementations**
+- require.js - client-side
+- curl - client-side
+
+###### Method 3 - ES6 Modules
+ECMAScript 2015 (6th Edition), adds some language constructs to JavaScript, which form another module system.
+```
+import "jquery";
+export function doStuff() {}
+module "localModule" {}
+```
+**Pros**
+- Static analysis is easy.
+- Future-proof as ES standard.
+  **Cons**
+- Native browser support will take time.
+- Very few modules in this style.
+
+# Indepth Features
+# ============================================
+###### Chunked Transferring
+Modules should be executed on the client, so they must be transferred from the server to the browser.
+There are two extremes when transferring modules:
+- 1 request per module
+- All modules in one request
+
+Both are used in the wild, but both are suboptimal:
+- 1 request per module
+        Pro: only required modules are transferred
+        Con: many requests means much overhead
+        Con: slow application startup, because of request latency
+- All modules in one request
+        Pro: less request overhead, less latency
+        Con: not (yet) required modules are transferred too
+
+A more flexible transferring would be better. A compromise between the extremes is better in most cases.
+→ While compiling all modules: Split the set of modules into multiple smaller batches (chunks).
+This allows for multiple smaller, faster requests. The chunks with modules that are not required initially can be loaded on demand. This speeds up the initial load but still lets you grab more code when it will actually be used.
+The “split points” are up to the developer.
+→ A big code base is possible!
+Note: The idea is from Google’s GWT.
+Read more about Code Splitting.
+
+###### Why only JavaScript?
+Why should a module system only help the developer with JavaScript? There are many other resources that need to be handled:
+- stylesheets
+- images
+- webfonts
+- html for templating
+
+Or translated/processed:
+- coffeescript → javascript
+- elm → javascript
+- less stylesheets → css stylesheets
+- jade templates → javascript which generates html
+- i18n files → something
+
+This should be as easy as follows. For other file types webpack uses loaders that can understand these and then build the dependecy tree for assets.
+```
+require("./style.css");
+require("./style.less");
+require("./template.jade");
+require("./image.png");
+```
+
+###### All assets are basically treated as modules
+What this means more precisely is that instead of building all your Sass files, and optimizing all your images, and including them on one side, then bundling all your modules, and including them on your page on another, you have this:
+
+```
+import stylesheet from 'styles/my-styles.scss';
+import logo from 'img/my-logo.svg';
+import someTemplate from 'html/some-template.html';
+
+console.log(stylesheet); // "body{font-size:12px}"
+console.log(logo); // "data:image/svg+xml;base64,PD94bWwgdmVyc2lvmU9Im5[...]"
+console.log(someTemplate) // "<html><body><h1>Hello</h1></body></html>"
+```
+All your assets are considered modules themselves, that can be imported, modified, manipulated, and that ultimately can be packed into your final bundle.
+**Start with any files as entry points. Then you can then parse then with respective loaders.**
+```
+{
+  // When you import a .ts file, parse it with Typescript
+  test: /\.ts/,
+  loader: 'typescript',
+},
+{
+  // When you encounter images, compress them with image-webpack (wrapper around imagemin)
+  // and then inline them as data64 URLs
+  test: /\.(png|jpg|svg)/,
+  loaders: ['url', 'image-webpack'],
+},
+{
+  // When you encounter SCSS files, parse them with node-sass, then pass autoprefixer on them
+  // then return the results as a string of CSS
+  test: /\.scss/,
+  loaders: ['css', 'autoprefixer', 'sass'],
+}
+```
+
+
 
 # Features
 # ============================================
@@ -330,7 +316,8 @@ module.exports = config;
 **BUILD_DIR:** represents the directory path of the bundle file output.
 Instead of the above we can directly use the global ___dir.
 
-**entry** — name of the top level file or set of files that we want to include in our build, can be a single file or an array of files. In our build, we only pass in our main file (app.js).
+###### Entry
+name of the top level file or set of files that we want to include in our build, can be a single file or an array of files. In our build, we only pass in our main file (app.js).
 If you need multiple bundles for multiple HTML pages you can use the “multiple entry points” feature. It will build multiple bundles at once. Additional chunks can be shared between these entry chunks and modules are only built once.
 Entry tells the Webpack where the root module or the starting point is. This can be a String, an Array or an Object. This could confuse you but the different types are used for different purposes. If you have a single starting point (like most apps), you can use any format and the result will be the same.
 But, if you want to append multiple files that are NOT dependent on each other, you can use the Array format.
@@ -377,9 +364,10 @@ module.exports = {
 };
 ```
 
+###### output
+an object containing your output configuration. In our build, we only specify the filename key (bundle.js) for the name of the file we want Webpack to build.
 
-**output** — an object containing your output configuration. In our build, we only specify the filename key (bundle.js) for the name of the file we want Webpack to build.
-**publicPath**: 
+###### publicPath
 ```
 // Development: Both Server and the image are on localhost
 .image { 
@@ -394,6 +382,94 @@ module.exports = {
 
 How to specify a directory and pack all the files present in it??????
 name-bundle.js
+
+# Resolve
+myfile = require('../../mydir/myfile.js') 
+but I'd like to write
+
+myfile = require('mydir/myfile.js') 
+
+Resolve is used to find “import” and “require” references that are not immediately available in the current path. For example: how a call to require("../homepage") might be translated to ("../homepage/index.js") or how an import react from 'react' might be interpreted if your node_modules folder is named something else. For more configuration options click here
+
+The resolving process is pretty simple and distinguishes between three types of requests:
+```
+absolute path: require("/home/me/file"), require("C:\\Home\\me\\file")
+relative path: require("../src/file"), require("./file")
+module path: require("module"), require("module/lib/file")
+```
+https://webpack.github.io/docs/resolving.html
+
+
+**resolve.root**
+The directory (absolute path) that contains your modules. May also be an array of directories. This setting should be used to add individual directories to the search path.
+```
+var path = require('path');
+// ...
+resolve: {
+  root: [
+    path.resolve('./app/modules'),
+    path.resolve('./vendor/modules')
+  ]
+}
+```
+
+###### resolve.alias
+Replace modules with other modules or paths. Expects an object with keys being module names. The value is the new path. It’s similar to a replace but a bit more clever.
+Create aliases to import or require certain modules more easily. For example, to alias a bunch of commonly used src/ folders:
+```
+alias: {
+  Utilities: path.resolve(__dirname, 'src/utilities/'),
+  Templates: path.resolve(__dirname, 'src/templates/')
+}
+```
+Now, instead of using relative paths when importing like so:
+```
+import Utility from '../../utilities/utility';
+```
+you can use the alias:
+```
+import Utility from 'Utilities/utility';
+```
+A trailing $ can also be added to the given object's keys to signify an exact match:
+```
+alias: {
+  xyz$: path.resolve(__dirname, 'path/to/file.js')
+}
+```
+which would yield these results:
+```
+import Test1 from 'xyz'; // Success, file.js is resolved and imported
+import Test2 from 'xyz/file.js'; // Error, /path/to/file.js/file.js is invalid
+```
+
+###### resolve.modulesDirectories
+An array of directory names to be resolved to the current directory as well as its ancestors, and searched for modules. This functions similarly to how node finds “node_modules” directories. For example, if the value is ["mydir"], webpack will look in “./mydir”, “../mydir”, “../../mydir”, etc.
+
+**resolve.fallback**
+A directory (or array of directories absolute paths), in which webpack should look for modules that weren’t found in resolve.root or resolve.modulesDirectories.
+
+**resolve.extensions**
+An array of extensions that should be used to resolve modules. For example, in order to discover CoffeeScript files, your array should contain the string ".coffee".
+
+###### Resolving an absolute path
+We first check if the path points to a directory. For a directory we need to find the main file in this directory. Therefore the main field in the package.json is joined to the path. If there is no package.json or no main field, index is used as filename.
+
+Now that Resolve has an absolute path to a file it attempts to append all extensions (configuration option: resolve.extensions). The first existing file is used as the result.
+
+###### Resolving a relative path
+Webpack’s context value is assumed to be the directory of the resource file that contains the require statement. If no resource file is found at Webpack’s context, Resolve’s context configuration option is used as the context directory. (This can occur for entry points or with loader-generated files).
+When the resource file is found, its relative path is joined to the context directory and the resulting absolute file is resolved according to “Resolving an absolute path”.
+
+###### Resolving a module path
+Module Paths are first searched in node_modules directory.
+For example
+import "jquery"
+For resolving a module Resolve first gathers all search directories for modules from Webpack’s context directory. This process is similar to the node.js resolving process, but the search directories are configurable with the configuration option resolve.modulesDirectories. In addition to this the directories in the configuration option resolve.root are prepended, and directories in the configuration option resolve.fallback are appended.
+The module is looked up in each module directory and resolved according to “Resolving an absolute path”. If the first match has no success, the second is tried, and so on.
+
+###### Aliasing
+Resolve’s configuration option resolve.alias renames modules.
+When trying to “resolve a module path” the module name is matched to the resolve.alias option. When there is a match, the matching module name is replaced with the alias.
 
 
 
@@ -1094,9 +1170,106 @@ const config = {
 In our config we tell Webpack to first run the css-loader and then the style-loader, it reads right to left. The css-loader makes any urls within it part of our dependency graph and the style-loader puts a style tag for the CSS in our HTML.
 So now you see that we do not only process files with Webpack, we can create side effects like creating style tags. With the HOT middleware, we can even run these side effects as we change the code of the app. That means every time you change some CSS Webpack will just update the existing style tag on the page, without a refresh.
 
+# Build Performance
+# ============================================
+Webpack has several caching layers inbuilt. Make sure you don’t do a full rebuild. Webpack has a great caching layer that allows you to keep already compiled modules in memory. There are some tools that help to use it:
+
+###### Comparison
+**webpack-dev-server:** Serves all webpack assets from memory. Best performance.
+**webpack-dev-middleware**: The same performance as webpack-dev-server for advanced users.
+**webpack –watch or watch: true**: Caches stuff but write assets to disk. Ok performance.
+
+###### Get Build Stats
+There is an analyse tool which can perform a detailed analysis and provide useful information on how to optimize your build size and performance.
+You can generate the required JSON file by running 
+```
+webpack --profile --json > stats.json
+```
+
+Resolve
+Perfect SourceMaps are slow.
+
+devtool: "source-map" cannot cache SourceMaps for modules and need to regenerate complete SourceMap for the chunk. It’s something for production.
+
+devtool: "eval-source-map" is really as good as devtool: "source-map", but can cache SourceMaps for modules. It’s much faster for rebuilds.
+
+devtool: "eval-cheap-module-source-map" offers SourceMaps that only maps lines (no column mappings) and are much faster.
+
+devtool: "eval-cheap-source-map" is similar but doesn’t generate SourceMaps for modules (i.e., jsx to js mappings).
+
+devtool: "eval" has the best performance, but it only maps to compiled source code per module. In many cases this is good enough. (Hint: combine it with output.pathinfo: true.)
+
+The UglifyJsPlugin uses SourceMaps to map errors to source code. And SourceMaps are slow. As you should only use this in production, this is fine. If your production build is really slow (or doesn’t finish at all) you can disable it with new UglifyJsPlugin({ sourceMap: false }).
+
+###### Additional Tips
+- Only use optimization plugins in production builds.
+- Prefetch modules
+- Only use resolve.modulesDirectories for nested paths. Most paths should use resolve.root. This can give significant performance gains. 
+
 
 # Long Term Caching
 
+# Common Chunks Plugin
+new webpack.optimize.CommonsChunkPlugin(options)
+**options.name or options.names (string|string[])**: The chunk name of the commons chunk. An existing chunk can be selected by passing a name of an existing chunk. If an array of strings is passed this is equal to invoking the plugin multiple times for each chunk name. If omitted and options.async or options.children is set all chunks are used, otherwise options.filename is used as chunk name.
+**options.filename (string)**: The filename template for the commons chunk. Can contain the same placeholder as output.filename. If omitted the original filename is not modified (usually output.filename or output.chunkFilename).
+options.minChunks (number|Infinity|function(module, count) -> boolean): The minimum number of chunks which need to contain a module before it’s moved into the commons chunk. The number must be greater than or equal 2 and lower than or equal to the number of chunks. Passing Infinity just creates the commons chunk, but moves no modules into it. By providing a function you can add custom logic. (Defaults to the number of chunks)
+**options.chunks (string[])**: Select the source chunks by chunk names. The chunk must be a child of the commons chunk. If omitted all entry chunks are selected.
+**options.children (boolean)**: If true all children of the commons chunk are selected
+**options.async (boolean|string)**: If true a new async commons chunk is created as child of options.name and sibling of options.chunks. It is loaded in parallel with options.chunks. It is possible to change the name of the output file by providing the desired string instead of true.
+options.minSize (number): Minimum size of all common module before a commons chunk is created.
+
+# Production Cofig
+http://www.christianalfoni.com/articles/2015_04_19_The-ultimate-webpack-setup
+-p sets NODE_ENV = “production”
+Following are the different modes: 
+In production disable sourcemaps
+devtool: "eval"
+
+# Webpack CLI
+**Production shortcut -p**
+Equals to --optimize-minimize --optimize-occurrence-order
+Important: Does not set NODE_ENV to production. You have to do it separately.
+
+**Configuration file --config example.config.js**
+Specifies a different configuration file to pick up. Use this if you want to specify something different than webpack.config.js, which is the default.
+
+**--progress**
+Display a compilation progress to stderr.
+
+**--display-modules**
+Show hidden modules. Modules are hidden from output by default when they live inside directories called 
+
+**--display-exclude**
+Exclude modules in the output.
+
+**Development shortcut -d**
+Equals to --debug --devtool source-map --output-pathinfo
+
+# Controlling Environment Variables
+In your webpack config, there are two options that can affect process.env:
+When you specify config.target (see config.target)
+When you define the process.env variable via DefinePlugin
+
+Setting using plugin
+```
+plugins: [
+    new webpack.DefinePlugin({"process.env.NODE_ENV": 	JSON.stringify(process.env.NODE_ENV)}),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.AggressiveMergingPlugin()
+  ]
+```
+
+
+# Webpack Server Config
+Here we dont need to bundle the additiona libraries.
+Don't bundle express. You can't spin up a server in the browser.
+For example libraries like express can be skippe.
+ I also am seeing this issue, did you ever solve it? I'm targeting node so not sure why I'm getting a warning. I'm using Express 4.13.3.
+
+https://github.com/webpack/webpack/issues/1206
+http://jlongster.com/Backend-Apps-with-Webpack--Part-I
 
 # Comparison
 # ============================================

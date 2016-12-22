@@ -1,7 +1,17 @@
 # About
 grunt and gulp are task runners to automate everything that can be automated (i.e. compile CSS/Sass, optimize images, make a bundle and minify/transpile it).
+Provides minification and concatenation.
+Uses pure JavaScript code.
+Converts LESS or SASS to CSS compilation.
+Manages file manipulation in the memory and enhances speed by using the Node.js platform.
+Huge speed advantage over any other task runner
+Easy to code and understand.
+Easy to test the web applications..
+Plugins are simple to use and they are designed to do one thing at a time.
+Performs repetitive tasks repeatedly such as minifying stylesheets, compressing images, etc.
 
 # Installation
+# ===============================================
 Install gulp globally
 ```
 npm install -g gulp
@@ -19,6 +29,7 @@ npm install --save-dev gulp
 ```
 
 # With Babel (ES6)
+# ===============================================
 Install babel core and presets and add them to the project
 ```
 npm install babel-core babel-preset-es2015 --save-dev
@@ -40,6 +51,7 @@ mv "gulpfile.js" "gulpfile.babel.js"
 
 
 # Setting Up
+# ===============================================
 ###### Setting Up Our Gulpfile & Running Gulp
 Following are the some example tasks that we will accomplish with sass
     Lint our JavaScript. (Seriously. Do it.)
@@ -61,6 +73,141 @@ Our **lint task** checks any JavaScript file in our js/ directory and makes sure
 The **sass task** compiles any of our Sass files in our scss/ directory into CSS and saves the compiled CSS file in our dist/css directory.
 
 The **scripts task** concatenates all JavaScript files in our js/ directory and saves the ouput to our dist/js directory. Then gulp takes that concatenated file, minifies it, renames it and saves it to the dist/js directory alongside the concatenated file.
+
+###### Creating a task
+gulp.task('task-name', function() {
+   //do stuff here
+});
+Where ‘task-name’ is a string name and ‘function()’ performs your task. The ‘gulp.task’ registers the function as a task within name and specifies the dependencies on other tasks.
+
+###### Cominging multiple tasks
+You can run multiple tasks at a time by creating default task in the configuration file as shown in the following code −
+
+gulp.task('default', ['imagemin', 'styles'], function() {
+
+});
+
+###### Gulp Rungs task async
+While rewriting the build process for one of my projects with gulp.js, a strange behavior was driving me mad. My rough setup looked something like this:
+
+```
+var gulp = require('gulp'),
+    concat = require('gulp-concat'),
+    rm = require('gulp-rimraf');
+
+gulp.task('clean', function() {
+    gulp.src('dist/*').pipe(rm());
+});
+
+gulp.task('concat', function() {
+    gulp.src('app/**/*.js').pipe(concat('main.js')).pipe(gulp.dest('dist'));
+});
+
+gulp.task('build', ['clean', 'concat']);
+```
+
+When I was running $ gulp build I did expect that the dist folder would be cleaned and after that all javascript files would be concatenated into dist/main.js. And in fact it worked at the first try, but sometimes I ended up with an empty dist folder. What was going on?
+
+After a little research I noticed gulp runs all its tasks in parallel. That means sometimes the clean task and sometimes the concat tasks runs first. So I needed a way to run those tasks in their correct order.
+
+In the official gulp docs on Github they recommend using callback functions to run tasks synchronously. Using their solution my code looked something like the following. Unfortunately it still didn't work.
+
+gulp.task('clean', function(cb) {
+    gulp.src('dist/*').pipe(rm());
+    cb();
+});
+
+gulp.task('concat', ['clean'], function() {
+    gulp.src('app/**/*.js').pipe(concat('main.js')).pipe(gulp.dest('dist'));
+});
+The cb() function seemed to be triggered before rm() had finished. So I tried another way which finally worked. Here is the solution I ended up with.
+
+gulp.task('clean', function() {
+    return gulp.src('dist/*').pipe(rm());
+});
+
+gulp.task('concat', ['clean'], function() {
+    return gulp.src('app/**/*.js').pipe(concat('main.js')).pipe(gulp.dest('dist'));
+});
+
+gulp.task('build', ['clean', 'concat']);
+The difference is, that you need to return the actual task and gulp knows on its own when it's done. To specify the running order of the tasks, you need to add the dependent tasks, which should be finished first, as the second parameter to a task. In my case it's pretty obvious, that the directory needs to be cleaned first, before the concat task may run.
+
+
+
+###### Pipe
+Gulp.js makes use of pipes for streaming data that needs to be processed.
+```
+   var gulp = require('gulp');
+    var gutil = require('gulp-util');
+
+    // require sass
+    var sass = require('gulp-ruby-sass');
+
+    gulp.task('sass', function () {
+      gulp.src('./assets/styles/**/*.scss')
+        .pipe(sass())
+        .pipe(gulp.dest('./assets/styles'));
+    });
+
+    gulp.task('default', ['sass']);
+```
+We’ve just created a task called ‘sass’ and inside of its anonymous function, told it what to do. We grab the src file(s) we want to process, which in this case is ./assets/styles/*/.scss—notice the */. Like Grunt, the double ** is saying, “Look in all the subfolders within styles and for all of the .scss files.” We then pipe the file(s) to the Sass function, then pipe what that returns to a Gulp destination directory that we want that final file to live. In this case, it’s gulp.dest(’./assets/styles’)
+
+
+```
+    var gulp = require('gulp'),
+        gutil = require('gulp-util'),
+        sass = require('gulp-ruby-sass'),
+        uglify = require('gulp-uglify'),
+        watch = require('gulp-watch'),
+        concat = require('gulp-concat'),
+        notify = require('gulp-notify');
+     
+    // sass task
+    gulp.task('sass', function () {
+      gulp.src('./assets/styles/**/*.scss')
+        .pipe(sass({ 
+          noCache: true,
+          style: "expanded",
+          lineNumbers: true,
+          loadPath: './assets/styles/*'
+        }))
+        .pipe(gulp.dest('./assets/styles'))
+        .pipe(notify({
+          message: "You just got super Sassy!"
+        }));;
+    });
+     
+    // uglify task
+    gulp.task('js', function() {
+      // main app js file
+      gulp.src('./assets/js/app.js')
+      .pipe(uglify())
+      .pipe(concat("app.min.js"))
+      .pipe(gulp.dest('./assets/js/'));
+     
+      // create 1 vendor.js file from all vendor plugin code
+      gulp.src('./assets/js/vendor/**/*.js')
+      .pipe(uglify())
+      .pipe(concat("vendor.js"))
+      .pipe(gulp.dest('./assets/js'))
+      .pipe( notify({ message: "Javascript is now ugly!"}) );
+    });
+     
+    gulp.task('watch', function() {
+      // watch scss files
+      gulp.watch('./assets/styles/**/*.scss', function() {
+        gulp.run('sass');
+      });
+     
+      gulp.watch('./assets/js/**/*.js', function() {
+        gulp.run('js');
+      });
+    });
+
+gulp.task('default', ['sass', 'js', 'watch']);
+```
 
 **gulpfile.js**
 ```

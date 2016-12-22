@@ -19,6 +19,7 @@
 
 # What is "use strict"
 
+order of CSS and order of JS
 
 # async function
 https://ponyfoo.com/articles/understanding-javascript-async-await
@@ -34,6 +35,96 @@ Why to return callbacks
 Passing functions to other functions
 using the fat arrow instead of defining new functions
 What is javascript V8
+
+
+gulp.task("bundle", ["clean"], cb => {
+  // change these for production and development
+  webpackServerBundler.run();
+  webpackClientBundler.run();
+  return cb();
+});
+
+is equal to
+
+gulp.task("bundle", ["clean"], function(cb) {
+  // change these for production and development
+  webpackServerBundler.run();
+  webpackClientBundler.run();
+  return cb();
+});
+
+
+
+# Importing from modules
+###### Defining multiple exports in a module
+
+```
+// There are 4 exports
+export const MyFunction = () => {}
+export const MyFunction2 = () => {}
+const Var = 1;
+const Var2 = 2;
+export {
+   Var, Var2
+}
+
+// Then import it this way
+import {MyFunction, MyFunction2, Var, Var2 } from './foo-bar-baz';
+```
+
+# Window Object
+Multiple initializing of function
+```
+  window.onGoogleSignIn = Login.onGoogleSignIn = function (googleUser) {
+      Login.sendAccessToken(googleUser.getAuthResponse().id_token, "google");
+  }
+```
+
+EventEmitter
+
+Dispatcher
+
+Flux
+
+EventEmitter
+Facebook's EventEmitter is a simple emitter implementation that prioritizes speed and simplicity. It is conceptually similar to other emitters like Node's EventEmitter, but the precise APIs differ.
+
+
+Explicitly calling / Passing a pointer
+For things that are done when event is triggered we just pass a pointer.
+
+
+Document onLoad vs Window onLoad
+
+The 2 syntaaxes
+export default class Some extends AnotherClass{
+}
+
+export class Some extends AnotherClass{
+}
+export default Some;
+
+
+Defining functions and Classes
+var destroyTypeahead = function(){
+    $("#university-input").typeahead("destroy");
+};
+
+
+var SectionFeatured = class SectionFeatured extends React.Component{
+    render(){
+      
+    }
+};
+
+###### Importing multiple exports from a module
+A module can have multiple imports under different name. There is also a defined default export too. When importing, we can export different members using the specific export statements.
+For example the following
+```
+import React, { Component, PropTypes } from 'react'
+```
+This will grab the exported { **Component**, **PropTypes** } members from the 'react' module and assign them to Component and **PropTypes**, respectively. **React** will be equal to the module's default export.
+
 
 # Javascript Flow Control
 # =======================================================

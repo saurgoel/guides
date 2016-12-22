@@ -1,22 +1,21 @@
 # Basics
 # =======================================================
 https://github.com/kriasoft/react-starter-kit
-
 While building client-side apps, a team at Facebook reached a conclusion that a lot of web-developers had already noticed: the DOM is slow. They did, however, tackle this problem in an interesting way.
-To make it faster, React implements a virtual DOM that is basically a DOM tree representation in Javascript. So when it needs to read or write to the DOM, it will use the virtual representation of it. Then the virtual DOM will try to find the most efficient way to update the browsers DOM.
+To make it faster, React implements a virtual DOM that is basically a DOM tree representation in Javascript. So when it needs to read or write to the DOM, it will use the virtual representation of it. **Then the virtual DOM will try to find the most efficient way to update the browsers DOM**.
 The rationale for this is that JavaScript is very fast and its worth keeping a DOM tree in it to speedup its manipulation.
 React is not a framework though. Think of it as the "View" in your traditional MVC framework.
 
 ###### Isomorphic vs Universal Javascript
-
-React.js is the new popular guy around the "JavaScript Frameworks" block, and it shines for its simplicity. Where other frameworks implement a complete MVC framework, we could say React only implements the V (in fact, some people replace their framework's V with React). React applications are built over 2 main principles: Components and States. Components can be made of other smaller components, built-in or custom; the State drives what the guys at Facebook call one-way reactive data flow, meaning that our UI will react to every change of state.
-One of the good things about React is that it doesn't require any additional dependencies, making it pluggable with virtually any other JS library. Taking advantage of this feature, we are going to include it into our Rails stack to build a frontend-powered application, or you might say, a Rails view on steroids.
+React.js is the new popular guy around the "JavaScript Frameworks" block, and it shines for its simplicity. Where other frameworks implement a complete MVC framework, we could say React only implements the V (in fact, some people replace their framework's V with React). React applications are built over 2 main principles: **Components and States**. 
+Components can be made of other smaller components, built-in or custom; the State drives what the guys at Facebook call one-way reactive data flow, meaning that our UI will react to every change of state.
+One of the good things about React is that **it doesn't require any additional dependencies, making it pluggable with virtually any other JS library**.
 It keeps a virtual React DOM which randomly updates parts that have been changed or those that need to be updated.
-React allows both client and server side rendering.
-It provides an option for pure JavaScript template creation.
-React JS components are highly re-usable.
-React comes with a small API. Beginners will find it easy to learn and start using it.
-React Native, an offshoot of React Js allows use of Javascript to write Native IOS applications.
+- React allows both client and server side rendering.
+- It provides an option for pure JavaScript template creation.
+- React JS components are highly re-usable.
+- React comes with a small API. Beginners will find it easy to learn and start using it.
+- React Native, an offshoot of React Js allows use of Javascript to write Native IOS applications.
 
 ###### Declarative (declare components)
 React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes.
@@ -66,6 +65,7 @@ numbers.reduce(function (previous, current){
 ```
 
 ###### Server Side Rendering
+This is a very nice feature that helps in fast rendering. Instead of waiting for the client to load javascript and then run, server itself renders the page and serves the page so that client does not need to run anything. This makes the page fast and also solves the SEO thing.
 React boasts a unique feature that facilitates quick rendering of content, for better user interaction. A virtual React DOM allows both client side and server side rendering which decreases  the page load time. Facebook, a high user traffic site employs React Js since it delivers amazing user experience, which is vital for a website of its caliber.
 
 ###### Seo Benefits
@@ -81,6 +81,10 @@ ReactJS creates its own virtual DOM where your components are kept. This approac
 However, ReactJS is SEO friendly, real time and compatible with heavy traffic. Whereas, AngularJS offers easy development and testing along with reliability.
 React is amazing on the client side, but it’s ability to be rendered on the server side makes it truly special. This is because React uses a virtual DOM instead of the real one, and allows us to render our components to markup.
 
+###### React vs ReactDom Library
+React and ReactDOM were only recently split into two different libraries. Prior to v0.14, all ReactDOM functionality was part of React. This may be a source of confusion, since any slightly dated documentation won't mention the React / ReactDOM distinction.
+As the name implies, ReactDOM is the glue between React and the DOM. Often, you will only use it for one single thing: mounting with ReactDOM.render(). Another useful feature of ReactDOM is ReactDOM.findDOMNode() which you can use to gain direct access to a DOM element. (Something you should use sparingly in React apps, but it can be necessary.) If your app is "isomorphic", you would also use ReactDOM.renderToString() in your back-end code.
+The reason React and ReactDOM were split into two libraries was due to the arrival of React Native. React contains functionality utilised in web and mobile apps. ReactDOM functionality is utilised only in web apps
 
 # JSX
 # =======================================================
@@ -93,17 +97,23 @@ This means code completion gives you a helping hand as you type references to yo
 In contrast, AngularJS’s string-based templates come with the usual downsides: There is no code coloring in many editors, limited code completion support, and run-time failures. Hence ReactJS is ahead in this.
 
 ###### Installing JSX
+```
 npm install -g jsx
+```
 
 ###### Sample JSX file
+```
 class _Main {
     static function main(args : string[]) : void {
         log "Hello, world!";
     }
 }
+```
 
 ###### Running JSX
+```
 jsx --run hello.jsx
+```
 
 ###### Comparing JSX syntax
 **In JSX**
@@ -135,6 +145,193 @@ React.createElement(
 ```
 You'll notice that React uses className instead of the traditional DOM class. From the docs, "Since JSX is JavaScript, identifiers such as class and for are discouraged as XML attribute names. Instead, React DOM components expect DOM property names like className and htmlFor, respectively."
 
+###### Parsing JSX using webpack and babel
+You can use .js extension and use bable-loader with react presets. It will pickup jsx automatically from js files too.
+```
+{ test: [/\.js$/, /\.es6$/], loader: ["babel-loader"], query: { cacheDirectory: "babel_cache", presets: ["react", "es2015"]}}
+```
+# COMPONENTS
+# =======================================================
+Component are classes. When you use them an instance of them is created with all the states, props etc.
+There are two types of component. These types are not just react-based but can be visualized in any other component-based UI library or framework. They include:
+
+**Presentation Component:** These are contained components that are responsible for UI. They are composed with JSX and rendered using the render method. The key rule about this type of component is that they are stateless meaning that no state of any sort is needed in such components. Data is kept in sync using props.
+If all that a presentation component does is render HTML based on props, then you can use stateless function to define the component rather than classes.
+
+**Container Component:** This type of component complements presentation component by providing states. Its always the guy at the top of the family tree, making sure that data is coordinated.
+You do not necessarily need a state management tool outside of what React provides if what you are building does not have too much nested children and less complex. A To-Do is is simple so we can do with what React offers for now provided we understand how and when to use a presentation or container component
+
+In React, components are the individual building blocks of how your data is viewed. You write components to handle how your data should look and to automatically render state changes. When you create a component, you define all of this by overriding **React.Component’s render function**.
+
+###### Typechecking with propTypes
+As your app grows, you can catch a lot of bugs with typechecking. For some applications, you can use JavaScript extensions like Flow or TypeScript to typecheck your whole application. But even if you don't use those, React has some built-in typechecking abilities. To run typechecking on the props for a component, you can assign the special propTypes property:
+
+class Greeting extends React.Component {
+  render() {
+    return (
+      <h1>Hello, {this.props.name}</h1>
+    );
+  }
+}
+
+Greeting.propTypes = {
+  name: React.PropTypes.string
+};
+
+###### Default Prop Values
+You can define default values for your props by assigning to the special defaultProps property:
+```
+class Greeting extends React.Component {
+  render() {
+    return (
+      <h1>Hello, {this.props.name}</h1>
+    );
+  }
+}
+
+// Specifies the default values for props:
+Greeting.defaultProps = {
+  name: 'Stranger'
+};
+
+// Renders "Hello, Stranger":
+ReactDOM.render(
+  <Greeting />,
+  document.getElementById('example')
+);
+```
+
+###### Mixins
+
+###### Constructor Difference
+The two approaches are not interchangeable. You should initialize state in the constructor when using ES6 classes, and define the getInitialState method when using React.createClass.
+
+See the official React doc on the subject of ES6 classes.
+The difference between constructor and getInitialState is the difference between ES6 and ES5 itself.
+getInitialState is used with React.createClass and
+constructor is used with React.Component
+
+```
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { /* initial state */ };
+  }
+}
+is equivalent to
+
+var MyComponent = React.createClass({
+  getInitialState() {
+    return { /* initial state */ };
+  },
+});
+```
+
+n the constructor, you should always assign to this.state directly. Note that this is the only place where this is allowed. You should use this.setState() everywhere else.
+
+**With ES6 and JSX**
+```
+import React from 'react';
+ 
+class Hello extends React.Component {
+  render() {
+    return <h1>Hello</h1>
+  }
+}
+```
+**More shorthand**
+```
+export const Counter = (props) => (
+  <div style={{ margin: '0 auto' }} >
+    <h2>Counter: {props.counter}</h2>
+    <button className='btn btn-default' onClick={props.increment}>
+      Increment
+    </button>
+    {' '}
+    <button className='btn btn-default' onClick={props.doubleAsync}>
+      Double (Async)
+    </button>
+  </div>
+)
+
+Counter.propTypes = {
+  counter     : React.PropTypes.number.isRequired,
+  doubleAsync : React.PropTypes.func.isRequired,
+  increment   : React.PropTypes.func.isRequired
+}
+
+export default Counter
+```
+**Another way to create components**
+```
+var Parent = React.createClass({
+    componentDidMount: function() {
+        console.log(this._child.someMethod()); // Prints 'bar'
+    },
+    render: function() {
+        return (
+            <div>
+                <Child ref={(child) => { this._child = child; }} />
+            </div>
+        );
+    }
+});
+```
+
+First off, we have ES6 import statements and class definitions, which makes our code more concise by not having to call React.createClass. But there is also some funky looking inline HTML type stuff in the component class definition’s render function. This XML-like syntax being returned from the function is called JSX. It was designed to make building React components easier because it is concise and familiar for defining tree structures with attributes.
+
+All of this new syntax might look a bit strange, but don’t worry because in just a bit well use Babel to transpile both the ES6 syntax and the JSX syntax into ES5 JavaScript that can be run in a browser.
+
+**Without ES6 and JSX**
+```
+var React = require('react');
+ 
+var Hello = React.createClass({displayName: 'Hello',
+  render: function() {
+    return React.createElement("h1", null, "Hello ");
+  }
+});
+```
+
+###### Rendering
+Now that we have our component class, we need to add some code to “mount” this component to a DOM element. This will take our React component and render it to display within an element of an HTML page. To do this we import the React DOM and call its render function, passing in a component object as well as an actual DOM element to attach to.
+
+**In case your components are in a module, you need to export appropriately then import it into your main js file where file is rendered.**
+```
+var Books = React.createClass({
+	render: function() {
+	return (
+		<table>
+			<thead>
+				<tr>
+					<th>Title</th>
+				</tr>
+			</thead>
+			<tbody>
+				<Book title='Professional Node.js'></Book>
+				<Book title='Node.js Patterns'></Book>
+			</tbody>
+		</table>
+		);
+	}
+});
+
+var Book = React.createClass({
+	render: function() {
+		return (
+			<tr>
+				<td>{this.props.title}</td>
+			</tr>
+		);
+	}
+});
+
+ReactDOM.render(<Books />, document.getElementById('container'));
+```
+Components are a very useful way to compose and reuse views (and logic).
+
+###### Components can be Function or Class
+
 # PROPERTIES
 # =======================================================
 ```
@@ -156,47 +353,331 @@ React.render(<Book data={data}/>, document.getElementById('container'));
 ```
 Everything in this.props is passed down to you from the parent. That includes the values that were declared in the element attributes, just like in regular HTML where you declare attributes like class or href
 
+```
+// Earlier
+React.render(<Book data={data}/>, document.getElementById('container'));
+// Now
+ReactDOM.render(<Book data={data}/>, document.getElementById('container'));
+```
+###### Props are read-only
+Whether you declare a component as a function or a class, it must never modify its own props. Props can be used to initiate but once renderered the following dynamicness is handled by state.
+Of course, application UIs are dynamic and change over time. In the next section, we will introduce a new concept of "state". State allows React components to change their output over time in response to user actions, network responses, and anything else, without violating this rule.
+Example of pure functions:
+Such functions are called "pure" because they do not attempt to change their inputs, and always return the same result for the same inputs.
+function sum(a, b) {
+  return a + b;
+}
+Whereas the following changes the input and is not pure.
+function withdraw(account, amount) {
+  account.total -= amount;
+}
+
+# States and Lifecycle
+# =======================================================
+###### React Components - Function vs Class
+Functions dont have a lifecycle. Give input and they give output. On the other hand react class components have a complete lifecycle.
+###### Stateless Functional Components
+React supports a simpler syntax called **stateless functional components** for component types like Square that only consist of a render method. Rather than define a class extending **React.Component**, **simply write a function that takes props and returns what should be rendered**:
+```
+function Clock(props) {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <h2>It is {props.date.toLocaleTimeString()}.</h2>
+    </div>
+  );
+}
+```
+
+// A functional component using an ES2015 (ES6) arrow function:
+var Aquarium = (props) => {
+  var fish = getFish(props.species);
+  return <Tank>{fish}</Tank>;
+};
+
+// Or with destructuring and an implicit return, simply:
+var Aquarium = ({species}) => (
+  <Tank>
+    {getFish(species)}
+  </Tank>
+);
+
+// Then use: <Aquarium species="rainbowfish" />
+You can convert a functional component like Clock to a class as follows:
+- Create an ES6 class with the same name that extends React.Component.
+- Add a single empty method to it called render().
+- Move the body of the function into the render() method.
+- Replace props with this.props in the render() body.
+- Delete the remaining empty function declaration.
+```
+class Clock extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.props.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+```
+You'll need to change this.props to props both times it appears. Many components in your apps will be able to be written as functional components: these components tend to be easier to write and React will optimize them more in the future.
+
+###### Adding Local state to Class
+Here we will be adding a class constructor.
+Props are generally used in functional elements. Don't use props if the component is a lifecycle component i.e. the value changes via the lifecycle of the component. For this use states. Here 
+```
+class Clock extends React.Component {
+  constructor(props) {
+	// You need to pass props
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+```
+
+###### Adding lifecycle methods to a class
+**componentDidMount** - We want to set up a timer whenever the Clock is rendered to the DOM for the first time. This is called "mounting" in React.
+**componentWillUnmount** - We also want to clear that timer whenever the DOM produced by the Clock is removed. This is called "unmounting" in React.
+These methods are called "lifecycle hooks".
+The componentDidMount() hook runs after the component output has been rendered to the DOM. This is a good place to set up a timer.
+**Other Fields** - While this.props is set up by React itself and this.state has a special meaning, you are free to add additional fields to the class manually if you need to store something that is not used for the visual output.
+```
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()};
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      date: new Date()
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <Clock />,
+  document.getElementById('root')
+);
+```
+
+- When <Clock /> is passed to ReactDOM.render(), React calls the constructor of the Clock component. Since Clock needs to display the current time, it initializes this.state with an object including the current time. We will later update this state.
+- React then calls the Clock component's render() method. This is how React learns what should be displayed on the screen. React then updates the DOM to match the Clock's render output.
+- When the Clock output is inserted in the DOM, React calls the componentDidMount() lifecycle hook. Inside it, the Clock component asks the browser to set up a timer to call tick() once a second.
+- Every second the browser calls the tick() method. Inside it, the Clock component schedules a UI update by calling setState() with an object containing the current time. Thanks to the setState() call, React knows the state has changed, and calls render() method again to learn what should be on the screen. This time, this.state.date in the render() method will be different, and so the render output will include the updated time. React updates the DOM accordingly.
+- If the Clock component is ever removed from the DOM, React calls the componentWillUnmount() lifecycle hook so the timer is stopped.
+
+###### Use setState
+Do not modify state directly. For example, this will not re-render a component:
+// Wrong
+this.state.comment = 'Hello';
+Instead, use setState():
+// Correct
+this.setState({comment: 'Hello'});
+
+###### State updates may be asyncronous
+React may batch multiple setState() calls into a single update for performance.
+Because this.props and this.state may be updated asynchronously, you should not rely on their values for calculating the next state.
+For example, this code may fail to update the counter:
+```
+// Wrong
+this.setState({
+  counter: this.state.counter + this.props.increment,
+});
+```
+To fix it, use a second form of setState() that accepts a function rather than an object. That function will receive the previous state as the first argument, and the props at the time the update is applied as the second argument:
+```
+// Correct
+this.setState((prevState, props) => ({
+  counter: prevState.counter + props.increment
+}));
+```
+We used an arrow function above, but it also works with regular functions:
+```
+this.setState(function(prevState, props) {
+  return {
+    counter: prevState.counter + props.increment
+  };
+});
+```
+
+###### State Updates are merged
+When you call setState(), React merges the object you provide into the current state.
+
+For example, your state may contain several independent variables:
+```
+  constructor(props) {
+    super(props);
+    this.state = {
+      posts: [],
+      comments: []
+    };
+  }
+```
+Then you can update them independently with separate setState() calls:
+```
+  componentDidMount() {
+    fetchPosts().then(response => {
+      this.setState({
+        posts: response.posts
+      });
+    });
+
+    fetchComments().then(response => {
+      this.setState({
+        comments: response.comments
+      });
+    });
+  }
+```
+The merging is shallow, so this.setState({comments}) leaves this.state.posts intact, but completely replaces this.state.comments.
+
+###### Playing between components
+Neither parent nor child components can know if a certain component is stateful or stateless, and they shouldn't care whether it is defined as a function or a class.
+This is why state is often called local or encapsulated. It is not accessible to any component other than the one that owns and sets it.
+
+A component may choose to pass its state down as props to its child components:
+<FormattedDate date={this.state.date} />
+The FormattedDate component would receive the date in its props and wouldn't know whether it came from the Clock's state, the props, or was typed by hand:
+
+function FormattedDate(props) {
+  return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+}
+
+This is commonly called a "top-down" or "unidirectional" data flow. Any state is always owned by some specific component, and any data or UI derived from that state can only affect components "below" them in the tree.
+
+###### Lifting State Up
+Often, several components need to reflect the same changing data. We recommend lifting the shared state up to their closest common ancestor. Let's see how this works in action.
+
+
 
 # EVENTS
 # =======================================================
-Now we need to add a read checkbox to each book that mutates its state. For that, we need to register a listener for the checked event:
-Notice, though, that when we click the checkbox the state doesnt change. This is because the variable state is not changed, therefore the view doesnt change.
+React events are named using camelCase, rather than lowercase.
+With JSX you pass a function as the event handler, rather than a string.
 ```
-var Books = React.createClass({
-	render: function() {
-		return (
-			// ...
-			<tr>
-				<th>Title</th>
-				<th>Read</th>
-			</tr>
-			// ...
-		);
-	}
-});
+<button onclick="activateLasers()">
+  Activate Lasers
+</button>
+```
+is slightly different in React:
 
-var state = {
-	read: false
-};
+```
+<button onClick={activateLasers}>
+  Activate Lasers
+</button>
+```
 
-var Book = React.createClass({
-	handleChange: function(ev) {
-		console.log('onChange: ', ev);
-	},
-	render: function() {
-		return (
-			<tr>
-				<td>{this.props.title}</td>
-				<td><input type='checkbox' checked={state.read}					onChange={this.handleChange} /></td>
-			</tr>
-		);
-	}
-});
+Another difference is that you cannot return false to prevent default behavior in React. You must call preventDefault explicitly. For example, with plain HTML, to prevent the default link behavior of opening a new page, you can write:
+```
+<a href="#" onclick="console.log('The link was clicked.'); return false">
+  Click me
+</a>
+```
+In React, this could instead be:
+```
+function ActionLink() {
+  function handleClick(e) {
+    e.preventDefault();
+    console.log('The link was clicked.');
+  }
+
+  return (
+    <a href="#" onClick={handleClick}>
+      Click me
+    </a>
+  );
+}
 ```
 
 
 # STATE
 # =======================================================
+**https://medium.com/@firasd/quick-start-tutorial-universal-react-with-server-side-rendering-76fe5363d6e#.edxu285rm
+https://medium.com/@firasd/quick-start-tutorial-using-redux-in-react-apps-89b142d6c5c1#.avk3yuh9o**
+
+React components can have state by setting this.state in the constructor, which should be considered private to the component. Let's store the current value of the square in state, and change it when the square is clicked. First, add a constructor to the class to initialize the state:
+
+Properties vs State
+```
+class Square extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      value: null,
+    };
+  }
+  ...
+}
+```
+
+An interactive component
+```
+<button className="square" onClick={() => alert('click')}>
+```
+
+In JavaScript classes, **you need to explicitly call super(); when defining the constructor of a subclass.**
+
+Now change the render method to display this.state.value instead of this.props.value, and change the event handler to be () => this.setState({value: 'X'}) instead of the alert:
+
+```
+<button className="square" onClick={() => this.setState({value: 'X'})}>
+    {this.state.value}
+</button>
+
+<button className="square" onClick={() => this.props.onClick()}>
+
+class Board extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      squares: Array(9).fill(null),
+    };
+  }
+}
+
+renderSquare(i) {
+  return <Square value={this.state.squares[i]} />;
+}
+
+renderSquare(i) {
+  return <Square value={this.state.squares[i]} onClick={() => this.handleClick(i)} />;
+}
+```
+
+
+
+
 
 
 # STATE MANAGEMENT - FLUX
@@ -249,77 +730,6 @@ const defaultState = {
 }
 ```
 
-# COMPONENTS
-# =======================================================
-There are two types of component. These types are not just react-based but can be visualized in any other component-based UI library or framework. They include:
-
-**Presentation Component:** These are contained components that are responsible for UI. They are composed with JSX and rendered using the render method. The key rule about this type of component is that they are stateless meaning that no state of any sort is needed in such components. Data is kept in sync using props.
-If all that a presentation component does is render HTML based on props, then you can use stateless function to define the component rather than classes.
-
-**Container Component:** This type of component complements presentation component by providing states. Its always the guy at the top of the family tree, making sure that data is coordinated.
-You do not necessarily need a state management tool outside of what React provides if what you are building does not have too much nested children and less complex. A To-Do is is simple so we can do with what React offers for now provided we understand how and when to use a presentation or container component
-
-In React, components are the individual building blocks of how your data is viewed. You write components to handle how your data should look and to automatically render state changes. When you create a component, you define all of this by overriding **React.Component’s render function**.
-
-**With ES6 and JSX**
-```
-import React from 'react';
- 
-class Hello extends React.Component {
-  render() {
-    return <h1>Hello</h1>
-  }
-}
-```
-First off, we have ES6 import statements and class definitions, which makes our code more concise by not having to call React.createClass. But there is also some funky looking inline HTML type stuff in the component class definition’s render function. This XML-like syntax being returned from the function is called JSX. It was designed to make building React components easier because it is concise and familiar for defining tree structures with attributes.
-
-All of this new syntax might look a bit strange, but don’t worry because in just a bit well use Babel to transpile both the ES6 syntax and the JSX syntax into ES5 JavaScript that can be run in a browser.
-
-**Without ES6 and JSX**
-```
-var React = require('react');
- 
-var Hello = React.createClass({displayName: 'Hello',
-  render: function() {
-    return React.createElement("h1", null, "Hello ");
-  }
-});
-```
-
-**Rendering**
-Now that we have our component class, we need to add some code to “mount” this component to a DOM element. This will take our React component and render it to display within an element of an HTML page. To do this we import the React DOM and call its render function, passing in a component object as well as an actual DOM element to attach to.
-```
-var Books = React.createClass({
-	render: function() {
-	return (
-		<table>
-			<thead>
-				<tr>
-					<th>Title</th>
-				</tr>
-			</thead>
-			<tbody>
-				<Book title='Professional Node.js'></Book>
-				<Book title='Node.js Patterns'></Book>
-			</tbody>
-		</table>
-		);
-	}
-});
-
-var Book = React.createClass({
-	render: function() {
-		return (
-			<tr>
-				<td>{this.props.title}</td>
-			</tr>
-		);
-	}
-});
-
-React.render(<Books />, document.getElementById('container'));
-```
-Components are a very useful way to compose and reuse views (and logic).
 
 # EVENT ARCHITECTURES BASED ON REACT
 # =======================================================
@@ -343,6 +753,257 @@ If you start directly with Redux, you may end up with over-engineered code, code
 Flux is a general framework for laying out how data flows and state changes in your application. Redux is one implementation (the best, in my opinion) of the concept of flux.
 They are both conceptually independent of React, although the top-down data flow that flux enables is very complimentary to how React prefers that data flows.
 So, to answer your question, learn Redux with React.
+
+
+# React API Calls
+# =======================================================
+Api call libraries
+Superagent
+Fetch
+Jquery
+
+###### Root Component
+When you start asking about AJAX and React, the first thing the experts will tell you is that React is a view library and React has no networking/AJAX features.
+http://andrewhfarmer.com/react-ajax-best-practices/
+Do not use jQuery to send AJAX requests. jQuery is a large library with many features, so using it just for AJAX doesn't make sense.
+I recommend using fetch(). It is a simple, standardized, JavaScript AJAX API. It is already supported by Chrome and Firefox, and polyfills are available for node and other browsers.
+
+When to use root component
+You have a shallow component tree.
+You're not using Redux or flux.
+
+###### Container Components
+A container component "provides the data and behavior to presentational or other container components."
+- You have a deep component tree.
+- Many of your components do not require data from the server, but some do.
+- You are fetching data from multiple APIs or endpoints.
+- You're not using Redux/flux, or you prefer container components to 'async actions'.
+
+###### Redux Async Actions
+
+###### Relay
+
+# Thinking in React
+# =======================================================
+https://facebook.github.io/react/docs/thinking-in-react.html
+Since you're often displaying a JSON data model to a user, you'll find that if your model was built correctly, your UI (and therefore your component structure) will map nicely. That's because UI and data models tend to adhere to the same information architecture, which means the work of separating your UI into components is often trivial. Just break it up into components that represent exactly one piece of your data model.
+- FilterableProductTable
+  - SearchBar
+  - ProductTable
+    - ProductCategoryRow
+    - ProductRow
+
+# Props vs State
+Props and states
+
+Global States and Local States
+
+# Redux Global State vs Local State
+don't use Redux until you have problems with vanilla React.
+You'll know when you need Flux. If you aren't sure if you need it, you don't need it.
+
+use Redux when you have reasonable amounts of data changing over time, you need a single source of truth, and you find that approaches like keeping everything in a top-level React component's state are no longer sufficient.
+
+http://redux.js.org/docs/faq/General.html#general-when-to-use
+
+I've been working with Redux to manage component state and have found it's a lot more work than just using this.state. A lot for the time there doesn't seem to be much of a payoff except when you want to share that state with other components. The zealots of the "One true flow" seem to never make exceptions: Everything must got through the Action > Reducer > Component cycle which is laborious to implement (especially of your doing testing).
+
+I've come to see Redux as global state and this.state as local state, as one sees global and local variables, but nobody seems to talk about this or come up with rules-of-thumb as to weather using an mix of both as permissible and if it is when is it OK?
+
+For example i'm finding that with controlled forms, in which the state is never needed outside the component until after it is submitted, its faster and easier to just use local state and update Redux after the submitted data has changed something on the server.
+
+My rule of thumb is now: If the data is not referenced outside the component then use local state. If its share between components use global (Redux).
+
+Is there some rationale as to why this would be a misnomer? Arguments for or against?
+You are absolutely correct, I use local state to keep track of form data, boolean values for conditional rendering, and anything else the component might need to do its thing. This is especially true if you have a prop on your component from the store, and you allow the user to edit that prop. if you set it on the state in getInitialState() { return { user: this.props.user} } , cancelling the edit is as easy as calling this.setState(this.getInitialState()) (assuming the user prop is an immutable object)
+
+However, the issue is, if the component gets unmounted for whatever reason (route change usually) then you lose the data.
+
+# Stateful Component
+
+# Conditional Rendering
+# =======================================================
+Consider we have 2 components
+```
+function UserGreeting(props) {
+  return <h1>Welcome back!</h1>;
+}
+function GuestGreeting(props) {
+  return <h1>Please sign up.</h1>;
+}
+```
+
+And we can print these depending on the state
+```
+function Greeting(props) {
+  const isLoggedIn = props.isLoggedIn;
+  if (isLoggedIn) {
+    return <UserGreeting />;
+  }
+  return <GuestGreeting />;
+}
+ReactDOM.render(
+  // Try changing to isLoggedIn={true}:
+  <Greeting isLoggedIn={false} />,
+  document.getElementById('root')
+);
+```
+
+
+```
+function LoginButton(props) {
+  return (
+    <button onClick={props.onClick}>
+      Login
+    </button>
+  );
+}
+function LogoutButton(props) {
+  return (
+    <button onClick={props.onClick}>
+      Logout
+    </button>
+  );
+}
+```
+
+Full Login Control Code
+```
+class LoginControl extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleLoginClick = this.handleLoginClick.bind(this);
+    this.handleLogoutClick = this.handleLogoutClick.bind(this);
+    this.state = {isLoggedIn: false};
+  }
+
+  handleLoginClick() {
+    this.setState({isLoggedIn: true});
+  }
+
+  handleLogoutClick() {
+    this.setState({isLoggedIn: false});
+  }
+
+  render() {
+    const isLoggedIn = this.state.isLoggedIn;
+
+    let button = null;
+    if (isLoggedIn) {
+      button = <LogoutButton onClick={this.handleLogoutClick} />;
+    } else {
+      button = <LoginButton onClick={this.handleLoginClick} />;
+    }
+
+    return (
+      <div>
+        <Greeting isLoggedIn={isLoggedIn} />
+        {button}
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <LoginControl />,
+  document.getElementById('root')
+);
+```
+
+Another method for conditionally rendering elements inline is to use the JavaScript conditional operator condition ? true : false.
+
+###### Inline Conditions
+You may embed any expressions in JSX by wrapping them in curly braces. This includes the JavaScript logical && operator. It can be handy for conditionally including an element:
+**true && expression** always evaluates to expression, and false && expression always evaluates to false
+```
+function Mailbox(props) {
+  const unreadMessages = props.unreadMessages;
+  return (
+    <div>
+      <h1>Hello!</h1>
+      {unreadMessages.length > 0 &&
+        <h2>
+          You have {unreadMessages.length} unread messages.
+        </h2>
+      }
+    </div>
+  );
+}
+
+const messages = ['React', 'Re: React', 'Re:Re: React'];
+ReactDOM.render(
+  <Mailbox unreadMessages={messages} />,
+  document.getElementById('root')
+);
+```
+
+In the example below, we use it to conditionally render a small block of text.
+**conditional operator condition ? true : false**
+```
+render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    <div>
+      The user is <b>{isLoggedIn ? 'currently' : 'not'}</b> logged in.
+    </div>
+  );
+}
+```
+It can also be used for larger expressions although it is less obvious what's going on:
+
+```
+render() {
+  const isLoggedIn = this.state.isLoggedIn;
+  return (
+    <div>
+      {isLoggedIn ? (
+        <LogoutButton onClick={this.handleLogoutClick} />
+      ) : (
+        <LoginButton onClick={this.handleLoginClick} />
+      )}
+    </div>
+  );
+}
+```
+
+
+###### Inline Traversing
+```
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    <li>{number}</li>
+  );
+  return (
+    <ul>{listItems}</ul>
+  );
+}
+
+function Blog(props) {
+  const sidebar = (
+    <ul>
+      {props.posts.map((post) =>
+        <li key={post.id}>
+          {post.title}
+        </li>
+      )}
+    </ul>
+  );
+  const content = props.posts.map((post) =>
+    <div key={post.id}>
+      <h3>{post.title}</h3>
+      <p>{post.content}</p>
+    </div>
+  );
+  return (
+    <div>
+      {sidebar}
+      <hr />
+      {content}
+    </div>
+  );
+}
+```
 
 
 # SETTING UP REACT ON EXPRESS 1
@@ -793,10 +1454,12 @@ server.listen(port, err => {
 ```
 
 https://medium.com/engineering-housing/progressing-mobile-web-fac3efb8b454#.pj1tjx4cm
-
-
 React-Forms
-React-Router
+
+# React-Router
+import { IndexLink, Link } from "react-router"
+
+
 Other functionaliesi
 
 
@@ -960,8 +1623,7 @@ Webpack is used to generate several JavaScript "bundles" for inclusion in applic
 This usage of webpack fits neatly and simply into the existing Rails sprockets system and you can include React components on a Rails view with a simple helper.
 Other apps will use separate node server to distribute assets and rails app for only apis.
 
-
-# React Rails
+###### react-rails
 react-rails makes it easy to use React and JSX in your Ruby on Rails (3.2+) application.
 Provide various react builds to your asset bundle
 Transform .jsx in the asset pipeline
@@ -970,7 +1632,7 @@ Render components into views and mount them via view helper & react_ujs
 - Generate components with a Rails generator
 - Be extended with custom renderers, transformers and view helpers
 
-# React on Rails
+###### react on rails
 Instead of using sprockets it uses webpack for rendering the server assets. Webpack etc is included separately using Procfiles. There are npm modules etc. also present inside, and packages are installed via npm inside the rails directory.
 Like the react-rails gem, React on Rails is capable of server-side rendering with fragment caching and is compatible with turbolinks. Unlike react-rails, which depends heavily on sprockets and jquery-ujs, React on Rails uses webpack and does not depend on jQuery.
 - Redux
@@ -981,9 +1643,7 @@ Webpack is used to generate several JavaScript "bundles" for inclusion in applic
 This usage of webpack fits neatly and simply into the existing Rails sprockets system and you can include React components on a Rails view with a simple helper.
 Other apps will use separate node server to distribute assets and rails app for only apis.
 
-
-# React Rails
-# Links
+###### Links
 https://github.com/reactjs/react-rails
 http://blog.arkency.com/rails-react/
 
@@ -995,129 +1655,7 @@ Render components into views and mount them via view helper & react_ujs
 - Generate components with a Rails generator
 - Be extended with custom renderers, transformers and view helpers
 
-# ----------------------- Transformers (JSX and Babel transformer for ES6)
-react-rails provides two transformers, React::JSX::JSXTransformer and React::JSX::BabelTransformer.
-Under the hood, react-rails uses ruby-babel-transpiler, for transformation.
-You can use babel's transformers and custom plugins, and pass options to the babel transpiler adding following configurations:
-
-config.react.jsx_transform_options = {
-  blacklist: ['spec.functionName', 'validation.react', 'strict'], # default options
-  optional: ["transformerName"],  # pass extra babel options
-  whitelist: ["useStrict"] # even more options
-}
-
-
-# ----------------------- Server Rendering
-To render components on the server, pass prerender: true to react_component:
-
-<%= react_component('HelloMessage', {name: 'John'}, {prerender: true}) %>
-
-<%= react_component('PACKAGES_PAGE',{
-config: {
-product_service_url_public: Amber.product_service_url_public,
-client_service_url_public: Amber.client_service_url_public,
-fb_login_app_id: Amber.fb_login_app_id,
-google_client_id: Amber.google_client_id
-},
-user:{
-logged_in: loggedin_user?, data: loggedin_user? ? @user_data:{}
-},
-packages: @packages_data,
-services: @services_data,
-browser: @browser,
-addresses: @addresses,
-default_package: @default_package,
-default_service: @default_service,
-editable: @editable,
-defaultProviderId: @default_provider_id
-}, {prerender: true})
-%>
-
-
-becomes
-
-<div data-react-class="HelloMessage" data-react-props="{&quot;name&quot;:&quot;John&quot;}">
-<h1>Hello, John!</h1>
-</div>
-
-react-rails must load your code. By convention, it uses components.js, which was created by the install task. This file must include your components and their dependencies (eg, Underscore.js).
-Your components must be accessible in the global scope.
-Your code can't reference document. Prerender processes don't have access to document, so jQuery and some other libs won't work in this environment :(
-
-
-# ----------------------- JSX Rendering vs direct JS
-JSX compiles into JS
-
-sample using JSX
-var Post = React.createClass({
-propTypes: {
-title: React.PropTypes.string,
-body: React.PropTypes.string,
-published: React.PropTypes.bool,
-publishedBy: React.PropTypes.instanceOf(Person)
-},
-
-render: function() {
-return (
-<div>
-<div>Title: {this.props.title}</div>
-<div>Body: {this.props.body}</div>
-<div>Published: {this.props.published}</div>
-<div>Published By: {this.props.publishedBy}</div>
-</div>
-);
-}
-});
-
-Sample usig JS
-this.Listings = React.createClass({
-render: function() {
-return React.DOM.div({
-className: 'records'
-}, React.DOM.h2({
-className: 'title'
-}, 'Listings'));
-}
-});
-
-React Rails transforms all the JSX into js
-use some_javascript.js.jsx for all the files
-After installing react-rails, restart your server. Now, .js.jsx files will be transformed in the asset pipeline.
-
-# ------------------------ react_component helper method
-react_component(component_class_name, props={}, html_options={})
-react_component('HelloMessage', {name: 'John'}, {prerender: true})
-
-<div data-react-class="HelloMessage" data-react-props="{&quot;name&quot;:&quot;John&quot;}">
-<h1>Hello, John!</h1>
-</div>
-
-component_class_name: is a string which names a globally-accessible component class. It may have dots (eg, "MyApp.Header.MenuItem").
-props: is either an object that responds to #to_json or an already-stringified JSON object (eg, made with Jbuilder, see note below).
-html_options may include:
-tag: to use an element other than a div to embed data-react-class and data-react-props.
-prerender: true to render the component on the server.
-**other Any other arguments (eg class:, id:) are passed through to content_tag.
-
-
-# ------------------------ Customizations
-Custom Server Renderer
-# react-rails depends on a renderer class for rendering components on the server. You can provide a custom renderer class to config.react.server_renderer. The class must implement:
-initialize(options={}), which accepts the hash from config.react.server_renderer_options
-render(component_name, props, prerender_options) to return a string of HTML
-# react-rails provides two renderer classes: React::ServerRendering::ExecJSRenderer and React::ServerRendering::SprocketsRenderer
-
-Custom View Helper
-# react-rails uses a "helper implementation" class to generate the output of the react_component helper. The helper is initialized once per request and used for each react_component call during that request. You can provide a custom helper class to config.react.view_helper_implementation. The class must implement:
-#react_component(name, props = {}, options = {}, &block) to return a string to inject into the Rails view
-#setup(controller_instance), called when the helper is initialized at the start of the request
-#teardown(controller_instance), called at the end of the request
-
-
-Custom JSX Transformer
-# react-rails provides two transformers, React::JSX::JSXTransformer and React::JSX::BabelTransformer.
-
-# More Components
+###### More Components
 react_on_rails Gem: Webpack Integration of React with Rails utilizing the modern JavaScript tooling and libraries, including Webpack, Babel, React, Redux, React-Router. You can an example of this live at www.reactrails.com.
 React.rb: Use Ruby to build reactive user interfaces with React under the covers.github source code here.
 react-rails-hot-loader is a simple live-reloader for react-rails.
