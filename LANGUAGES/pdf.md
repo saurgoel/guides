@@ -1,48 +1,6 @@
-## Makefile
-Location: ./Makefile 
-Purpose:  Generic management tasks.
-If you look at most of my projects or any Pocoo project, you'll notice a Makefile laying around. Why? These projects aren't written in C... In short, make is a incredibly useful tool for defining generic and platform agnostic tasks for your project.
-Sample Makefile:
 
-init:
-pip install -r requirements.txt
-
-test:
-py.test tests
-
-## Requirements File (pip)
-Location: ./requirements.txt 
-Purpose:  Development dependencies.
-A Pip requirements file should be placed at the root of the repository. It should specify the dependencies required to contribute to the project: testing, building, and generating documentation.
-
-If your project has no development dependencies, or you prefer development environment setup via setup.py, this file may be unnecessary.
-
-## Python setuptools
-Setuptools is a package development process library designed to facilitate packaging Python projects by enhancing the Python standard library distutils (distribution utilities). It includes: Python package and module definitions.
-
-## Setup.py
-Location: ./setup.py 
-Purpose:  Package and distribution management.
-If your module package is at the root of your repository, this should obviously be at the root as well.
-
-## Installing Python
-**Python comes preinstalled on OS X with developer tools installed**
-brew install python
-curl https://bootstrap.pypa.io/ez_setup.py -o - | sudo python
-sudo easy_install pip
-Check your /usr/bin and /usr/local/bin for easy_install installations and remove any old script:
-sudo rm -f /usr/bin/easy_install*
-sudo rm -f /usr/local/bin/easy_install*
-Download and run distribute:
-curl -O https://svn.apache.org/repos/asf/oodt/tools/oodtsite.publisher/trunk/distribute_setup.py
-
-sudo python distribute_setup.py
-sudo rm distribute_setup.py
-Try again, and enjoy. E.g.:
-sudo easy_install pip
-
-**pdfminer**
-
+# =============================================
+# pdfminer
 pdf2txt.py
 pdf2txt.py extracts text contents from a PDF file. It extracts all the text that are to be rendered programmatically, i.e. text represented as ASCII or Unicode strings. It cannot recognize text drawn as images that would require optical character recognition. It also extracts the corresponding locations, font names, font sizes, writing direction (horizontal or vertical) for each text portion. You need to provide a password for protected PDF documents when its access is restricted. You cannot extract any text from a PDF document which does not have extraction permission.
 which you can use to extract text and images. The command supports many options and is very flexible. Some popular options are shown below. See the usage information for complete details.
@@ -63,7 +21,6 @@ Note that the package cannot recognize text drawn as images because that would r
 
 pdf2txt.py -p 1,2 samples/resume_1.pdf
 
-# =============================================
 ## dumppdf.py
 dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format. This program is primarily for debugging purposes, but it's also possible to extract some meaningful contents (e.g. images).
 ```
@@ -87,12 +44,14 @@ Then we can install the pip-able requirements from the requirements.txt file:
 
 pip install -r requirements.txt
 
+# =============================================
 # pdfPlumber
 Plumb a PDF for detailed information about each text character, rectangle, and line. Plus: Easily extract data from tables trapped in PDFs.
 
 Works best on machine-generated, rather than scanned, PDFs. Built on pdfminer and pdfminer.six.****
 
-**PDFx**
+# =============================================
+# PDFx
 Extract references (pdf, url, doi, arxiv) and metadata from a PDF. Optionally download all referenced PDFs and check for broken links.
 Extract references and metadata from a given PDF
 Detects pdf, url, arxiv and doi references
@@ -104,6 +63,7 @@ Use as command-line tool or Python package
 Compatible with Python 2 and 3
 Works with local and online pdfs
 
+# =============================================
 # pyPDF2
 PyPDF2 is a pure-python PDF library capable of splitting, merging together, cropping, and transforming the pages of PDF files. It can also add custom data, viewing options, and passwords to PDF files. It can retrieve text and metadata from PDFs as well as merge entire files together.
 ```
@@ -222,7 +182,7 @@ The function add_metadata opens the source PDF file and appends it to a new PdfF
 
 Why would you want to add metadata to a PDF? One situation is when you are processing PDFs as part of a larger workflow in which each PDF file must be processed exactly once. In that case, when you open a file for processing, you first check for the custom metadata key; if it is not present, you add the key and continuing processing the file. If it's already present, the file has already been processed, so you skip it and continue with the next file.
 
-
+# =============================================
 ## **pdfInfo** - Pdf Metadata Tool
 ```
 pdfinfo MVN-2013-00026-WKK/public_notice.pdf
@@ -282,29 +242,35 @@ $ for file in */public_notice.pdf; do pdfinfo $file|sed -n 's/Pages: *//p' ; don
 TOTAL | 248 |
 ```
 
+# =============================================
 # pdfToText - For text only
 pdftotext normally screws up the layout of PDF files, especially when they have multiple columns, but it’s fine for what I’m doing because I only need to find small chunks of text rather than a whole table or a specific line on multiple pages. As we saw earlier, most of the files contain images, so I need to run OCR. Like pdftotext, OCR programs often mess up the page layout, but I don’t care because I’m using regular expressions to look for small chunks.
 
+# =============================================
 # pdfImages - Extract Images
 I don’t even care whether the images are in order; I just use pdfimages to pull out the images and then tesseract to OCR each image and add that to the text file. (This is all in the translate script that I linked above.)
 
-
+# =============================================
 # pdfToHtml
 
 # When layout matters
 If I care about the layout of the page, pdftotext probably won’t work. Instead, I use pdftohtml or inkscape. I’ve never needed to go deeper, but if I did, I’d use something like PDFMiner.
 
+# =============================================
 # InkScape - Convert pdf to svg
 Inkscape can convert a PDF page to an SVG file. I have a little script that runs this across all pages within a PDF file.
 Once you’ve converted the PDF file to a bunch of SVG files, you can open it with an XML parser just like you could with the pdftohtml output, except this time much more of the layout is preserved, including the groupings of elements on the page.
 Here’s a snippet from one project where I used Inkscape to parse PDF files. I created a crazy system for receiving a very messy PDF table over email and converting it into a spreadsheet that is hosted on a website.
 http://okfnlabs.org/blog/2013/12/25/parsing-pdfs.html
 
+# =============================================
 # pdf2SVG
 https://github.com/scraperwiki/pdf2svg
 
+# =============================================
 # pdfImages - For Removing Images
 People often think that optical character recognition (OCR) is going to be a hard part. It might be, but it doesn’t really change this decision process. If I care about where the images are positioned on the page, I’d probably use Inkscape. If I don’t, I’d probably use pdfimages, as I did here.
 If I need OCR, I use pdfimages to remove the images and tesseract to run OCR. If I needed to run OCR and know more about the layout, I might convert the PDFs to SVG with Inkscape and, and then take the images out of the SVG in order to know more precisely where they are in the page’s structure.
 
+# =============================================
 # Tesseract - For OCR
