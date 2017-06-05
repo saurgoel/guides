@@ -1,7 +1,7 @@
 
 # =============================================
 # pdfminer
-pdf2txt.py
+###### pdf2txt.py
 pdf2txt.py extracts text contents from a PDF file. It extracts all the text that are to be rendered programmatically, i.e. text represented as ASCII or Unicode strings. It cannot recognize text drawn as images that would require optical character recognition. It also extracts the corresponding locations, font names, font sizes, writing direction (horizontal or vertical) for each text portion. You need to provide a password for protected PDF documents when its access is restricted. You cannot extract any text from a PDF document which does not have extraction permission.
 which you can use to extract text and images. The command supports many options and is very flexible. Some popular options are shown below. See the usage information for complete details.
 ```
@@ -21,7 +21,7 @@ Note that the package cannot recognize text drawn as images because that would r
 
 pdf2txt.py -p 1,2 samples/resume_1.pdf
 
-## dumppdf.py
+###### dumppdf.py
 dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format. This program is primarily for debugging purposes, but it's also possible to extract some meaningful contents (e.g. images).
 ```
 dumppdf.py [options] filename.pdf
@@ -33,6 +33,56 @@ Options:
     -T dump the table of contents (bookmark outlines)
     -p password
 ```
+
+###### TOC Information
+PDFs generally contain TOC information. This is the table of contents that usually appear on the left hand side in a pdf reader and they can be used to easily navigate the pdf files. Generally this appears on big pdf files like a book.
+
+A layout analyzer returns a LTPage object for each page in the PDF document. This object contains child objects within the page, forming a tree structure. Figure 2 shows the relationship between these objects.
+
+###### Layout Analysis (using PDFPageAggregator)
+A layout analyzer returns a LTPage object for each page in the PDF document. This object contains child objects within the page, forming a tree structure. Figure 2 shows the relationship between these objects.
+```
+from pdfminer.layout import LAParams
+from pdfminer.converter import PDFPageAggregator
+
+# Set parameters for analysis.
+laparams = LAParams()
+# Create a PDF page aggregator object.
+device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+interpreter = PDFPageInterpreter(rsrcmgr, device)
+for page in PDFPage.create_pages(document):
+    interpreter.process_page(page)
+    # receive the LTPage object for the page.
+    layout = device.get_result()
+```
+
+###### LTTextBox
+Represents a group of text chunks that can be contained in a rectangular area. Note that this box is created by geometric analysis and does not necessarily represents a logical boundary of the text. It contains a list of LTTextLine objects. get_text() method returns the text content.
+
+###### LTTextLine
+Contains a list of LTChar objects that represent a single text line. The characters are aligned either horizontaly or vertically, depending on the text's writing mode. get_text() method returns the text content.
+
+###### LTPage
+Represents an entire page. May contain child objects like LTTextBox, LTFigure, LTImage, LTRect, LTCurve and LTLine.
+
+###### LTAnno
+Represent an actual letter in the text as a Unicode string. Note that, while a LTChar object has actual boundaries, LTAnno objects does not, as these are "virtual" characters, inserted by a layout analyzer according to the relationship between two characters (e.g. a space).
+
+###### LTFigure
+Represents an area used by PDF Form objects. PDF Forms can be used to present figures or pictures by embedding yet another PDF document within a page. Note that LTFigure objects can appear recursively.
+
+###### LTImage
+Represents an image object. Embedded images can be in JPEG or other formats, but currently PDFMiner does not pay much attention to graphical objects.
+
+###### LTLine
+Represents a single straight line. Could be used for separating text or figures.
+
+###### LTRect
+Represents a rectangle. Could be used for framing another pictures or figures.
+
+###### LTCurve
+Represents a generic Bezier curve.
+
 
 # =============================================
 ## pdftables - a library for extracting tables from PDF files

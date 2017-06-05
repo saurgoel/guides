@@ -83,7 +83,6 @@ Hello, Python!
 ```
 Let us try another way to execute a Python script. Here is the modified test.py file −
 ```
-#!/usr/bin/python
 print "Hello, Python!"
 ```
 We assume that you have Python interpreter available in /usr/bin directory. Now, try to run this program as follows −
@@ -131,19 +130,19 @@ print "Hello, Python!" # second comment
 + Addition	Adds values on either side of the operator.	a + b = 30
 - Subtraction	Subtracts right hand operand from left hand operand.	a – b = -10
 * Multiplication	Multiplies values on either side of the operator	a * b = 200
-/ Division	Divides left hand operand by right hand operand	b / a = 2
-% Modulus	Divides left hand operand by right hand operand and returns remainder	b % a = 0
-** Exponent	Performs exponential (power) calculation on operators	a**b =10 to the power 20
-//	Floor Division - The division of operands where the result is the quotient in which the digits after the decimal point are removed. But if one of the operands is negative, the result is floored, i.e., rounded away from zero (towards negative infinity):	9//2 = 4 and 9.0//2.0 = 4.0, -11//3 = -4, -11.0//3 = -4.0
+  / Division	Divides left hand operand by right hand operand	b / a = 2
+  % Modulus	Divides left hand operand by right hand operand and returns remainder	b % a = 0
+  ** Exponent	Performs exponential (power) calculation on operators	a**b =10 to the power 20
+  //	Floor Division - The division of operands where the result is the quotient in which the digits after the decimal point are removed. But if one of the operands is negative, the result is floored, i.e., rounded away from zero (towards negative infinity):	9//2 = 4 and 9.0//2.0 = 4.0, -11//3 = -4, -11.0//3 = -4.0
 
 
 ###### Comparison Operators
 ==	If the values of two operands are equal, then the condition becomes true.	(a == b) is not true.
 !=	If values of two operands are not equal, then condition becomes true.
 >	If the value of left operand is greater than the value of right operand, then condition becomes true.	(a > b) is not true.
-<	If the value of left operand is less than the value of right operand, then condition becomes true.	(a < b) is true.
+><	If the value of left operand is less than the value of right operand, then condition becomes true.	(a < b) is true.
 >=	If the value of left operand is greater than or equal to the value of right operand, then condition becomes true.	(a >= b) is not true.
-<=	If the value of left operand is less than or equal to the value of right operand, then condition becomes true.	(a <= b) is true.
+><=	If the value of left operand is less than or equal to the value of right operand, then condition becomes true.	(a <= b) is true.
 
 # =============================================
 # Variables
@@ -206,7 +205,6 @@ print "Good bye!"
 # Loops
 ###### for
 ```
-#!/usr/bin/python
 for letter in 'Python':     # First Example
    print 'Current Letter :', letter
 
@@ -233,7 +231,6 @@ for num in range(10,20):  #to iterate between 10 to 20
 ###### while
 A while loop statement in Python programming language repeatedly executes a target statement as long as a given condition is true.
 ```
-#!/usr/bin/python
 count = 0
 while (count < 9):
    print 'The count is:', count
@@ -242,7 +239,6 @@ print "Good bye!"
 ```
 
 ```
-#!/usr/bin/python
 count = 0
 while count < 5:
    print count, " is  less than 5"
@@ -368,8 +364,6 @@ print "list1[0]: ", list1[0]
 print "list2[1:5]: ", list2[1:5]
 
 Updating Values
-#!/usr/bin/python
-
 list = ['physics', 'chemistry', 1997, 2000];
 
 print "Value available at index 2 : "
@@ -379,8 +373,6 @@ print "New value available at index 2 : "
 print list[2]
 
 Deleting List elements
-#!/usr/bin/python
-
 list1 = ['physics', 'chemistry', 1997, 2000];
 
 print list1
@@ -417,6 +409,21 @@ list.pop(obj=list[-1]) - Removes and returns last object or obj from list
 list.remove(obj) - Removes object obj from list
 list.reverse() - Reverses objects of list in place
 list.sort([func]) - Sorts objects of list, use compare func if given
+
+# =============================================
+# Sets
+mylist = [u'nowplaying', u'PBS', u'PBS', u'nowplaying', u'job', u'debate', u'thenandnow']
+myset = set(mylist)
+print myset
+
+> > > d = set()
+> > > type(d)
+> > > <type 'set'>
+> > > d.update({1})
+> > > d.add(2)
+> > > d.update([3,3,3])
+> > > d
+> > > set([1, 2, 3])
 
 # =============================================
 # Tuples
@@ -530,7 +537,6 @@ Functions are generally the normal functions or class functions.
 
 More than one entry per key not allowed. Which means no duplicate key is allowed. When duplicate keys encountered during assignment, the last assignment wins. For example −
 
-#!/usr/bin/python
 dict = {'Name': 'Zara', 'Age': 7, 'Name': 'Manni'}
 
 print "dict['Name']: ", dict['Name']
@@ -652,30 +658,30 @@ def changeme( mylist ):
    return
 ```
 
-# Now you can call changeme function
+```
+#Now you can call changeme function
 mylist = [10,20,30];
-changeme( mylist );
+changeme(mylist);
 print "Values outside the function: ", mylist
 
-#!/usr/bin/python
-
-# Function definition is here
-def changeme( mylist ):
+#Function definition is here
+def changeme(mylist):
    "This changes a passed list into this function"
    mylist = [1,2,3,4]; # This would assig new reference in mylist
    print "Values inside the function: ", mylist
    return
 
-# Now you can call changeme function
+#Now you can call changeme function
 mylist = [10,20,30];
 changeme( mylist );
 print "Values outside the function: ", mylist
+```
 
 ###### Required Arguments
 Error is produced if the number of arguments dont match.
 ```
 # Function definition is here
-def printme( str ):
+def printme(str):
    "This prints a passed string into this function"
    print str
    return;
@@ -763,8 +769,44 @@ print "Outside the function global total : ", total
 # prints 0
 ```
 
-Where to define Functions in Script
+Functions within Functions
+```
+def scope_test():
+    def do_local():
+        spam = "local spam"
 
+    def do_nonlocal():
+        nonlocal spam
+        spam = "nonlocal spam"
+
+    def do_global():
+        global spam
+        spam = "global spam"
+
+    spam = "test spam"
+    do_local()
+    print("After local assignment:", spam)
+    do_nonlocal()
+    print("After nonlocal assignment:", spam)
+    do_global()
+    print("After global assignment:", spam)
+
+scope_test()
+print("In global scope:", spam)
+```
+
+Where to define Functions in Script
+Generator functions
+A function or method which uses the yield statement (see section The yield statement) is called a generator function. Such a function, when called, always returns an iterator object which can be used to execute the body of the function: calling the iterator’s iterator.***next***() method will cause the function to execute until it provides a value using the yield statement. When the function executes a return statement or falls off the end, a StopIteration exception is raised and the iterator will have reached the end of the set of values to be returned.
+
+Coroutine functions
+A function or method which is defined using async def is called a coroutine function. Such a function, when called, returns a coroutine object. It may contain await expressions, as well as async with and async for statements. See also the Coroutine Objects section.
+
+Asynchronous generator functions
+A function or method which is defined using async def and which uses the yield statement is called a asynchronous generator function. Such a function, when called, returns an asynchronous iterator object which can be used in an async for statement to execute the body of the function.
+
+Calling the asynchronous iterator’s aiterator.***anext***() method will return an awaitable which when awaited will execute until it provides a value using the yield expression. When the function executes an empty return statement or falls off the end, a StopAsyncIteration exception is raised and the asynchronous iterator will have reached the end of the set of values to be yielded.
+	
 # =============================================
 # Python Modules
 Python modules are one of the main abstraction layers available and probably the most natural one. Abstraction layers allow separating code into parts holding related data and functionality. 
@@ -829,7 +871,7 @@ When you import a module, the Python interpreter searches for the module in the 
 * The current directory.
 * If the module isn't found, Python then searches each directory in the shell variable PYTHONPATH.
 * If all else fails, Python checks the default path. On UNIX, this default path is normally /usr/local/lib/python/.
-The module search path is stored in the system module sys as the **sys.path** variable. The sys.path variable contains the current directory, PYTHONPATH, and the installation-dependent default.
+  The module search path is stored in the system module sys as the **sys.path** variable. The sys.path variable contains the current directory, PYTHONPATH, and the installation-dependent default.
 
 ###### Pip Packages
 Pip is a package manager. It installs packages and not modules. Packages are collectkon of modules that can be used. Pip package path are already included in sys.path.
@@ -888,15 +930,15 @@ Similar way, we have another two files having different functions with the same 
 Phone/Isdn.py file having function Isdn()
 Phone/G3.py file having function G3()
 
-Now, create one more file __init__.py in Phone directory −
-Phone/__init__.py
-To make all of your functions available when you've imported Phone, you need to put explicit import statements in __init__.py as follows −
+Now, create one more file ***init***.py in Phone directory −
+Phone/***init***.py
+To make all of your functions available when you've imported Phone, you need to put explicit import statements in ***init***.py as follows −
 ```
 from Pots import Pots
 from Isdn import Isdn
 from G3 import G3
 ```
-After you add these lines to __init__.py, you have all of these classes available when you import the Phone package.
+After you add these lines to ***init***.py, you have all of these classes available when you import the Phone package.
 
 ```
 # Now import your Phone Package.
@@ -905,6 +947,36 @@ Phone.Pots()
 Phone.Isdn()
 Phone.G3()
 ```
+
+###### Advanced
+Every module has a name and statements in a module can find out the name of its module. This is especially handy in one particular situation - As mentioned previously, when a module is imported for the first time, the main block in that module is run. What if we want to run the block only if the program was used by itself and not when it was imported from another module? This can be achieved using the ***name*** attribute of the module.
+```
+if __name__ == '__main__':
+	print 'This program is being run by itself'
+else:
+	print 'I am being imported from another module'
+```
+Every Python module has it's ***name*** defined and if this is '***main***', it implies that the module is being run standalone by the user and we can do corresponding appropriate actions.
+
+If a module is imported does the code in that run?
+Yes it runs
+And the variables/functions that are defined in that module can be used like so
+someModule.somevariable
+someModule.someFunction()
+
+
+Exiting a python program
+sys.exit() raises a SystemExit exception in the current thread. 
+Good way to exit
+Exit from Python. This is implemented by raising the  SystemExit exception, so cleanup actions specified by finally clauses of try statements are honored, and it is possible to intercept the exit attempt at an outer level.
+sys documentation - https://docs.python.org/2/library/sys.html
+
+sys.exit("some error message")
+
+Since exit() ultimately “only” raises an exception, it will only exit the process when called from the main thread, and the exception is not intercepted.
+
+The optional argument arg can be an integer giving the exit status (**defaulting to zero**), **or another type of object**. If it is an integer, zero is considered “successful termination” **and any nonzero value is considered “abnormal termination” by shells and the like**.
+
 
 # =============================================
 # Error Handling
@@ -928,9 +1000,501 @@ else:
    If there is no exception then execute this block. 
 ```
 
+Nested try catch
+https://docs.python.org/3/tutorial/errors.html
 
 # =============================================
 # Python OOP
+In python do not use getter/setter methods. Instead just access the attribute itself, or, if you need code to be run every time the attribute is accessed or set, use properties.
+```
+class C:
+    def __init__(self):
+        self._x = None
+
+    def getx(self):
+        return self._x
+
+    def setx(self, value):
+        self._x = value
+
+    def delx(self):
+        del self._x
+
+    x = property(getx, setx, delx, "I'm the 'x' property.")
+```
+    
+###### Terms
+* **Class**: A user-defined prototype for an object that defines a set of attributes that characterize any object of the class. The attributes are data members (class variables and instance variables) and methods, accessed via dot notation.
+* **Class variable**: A variable that is shared by all instances of a class. Class variables are defined within a class but outside any of the class's methods. Class variables are not used as frequently as instance variables are.
+* **Data member**: A class variable or instance variable that holds data associated with a class and its objects.
+* **Function overloading**: The assignment of more than one behavior to a particular function. The operation performed varies by the types of objects or arguments involved.
+* **Instance variable**: A variable that is defined inside a method and belongs only to the current instance of a class.
+* **Inheritance**: The transfer of the characteristics of a class to other classes that are derived from it.
+* **Instance**: An individual object of a certain class. An object obj that belongs to a class Circle, for example, is an instance of the class Circle.
+* **Instantiation**: The creation of an instance of a class.
+* Method : A special kind of function that is defined in a class definition.
+* **Object**: A unique instance of a data structure that's defined by its class. An object comprises both data members (class variables and instance variables) and methods.
+* **Operator overloading**: The assignment of more than one function to a particular operator.
+
+###### init method
+The first method ***init***() is a special method, which is called class constructor or initialization method that Python calls when you create a new instance of this class.
+
+###### Adding self as argument
+You declare other class methods like normal functions with the exception that the first argument to each method is self. Python adds the self argument to the list for you; you do not need to include it when you call the methods.
+
+###### Class Objects
+Class Objects are of 2 types:
+1. Attribute references
+2. Instantiation
+
+```
+class MyClass:
+    """A simple example class"""
+    i = 12345
+
+    def f(self):
+        return 'hello world'
+```
+**Class Attribute References** uses the standard syntax for attribute reference (obj.something)
+```
+MyClass.i
+MyClass.f
+```
+**Class instantiation** uses function notation. Just pretend that the class object is a parameterless function that returns a new instance of the class. 
+```
+x = MyClass()
+```
+
+**Order Matters**
+```
+class Hello:
+	def __init__(self):
+		return
+	
+	def some():
+		return ""
+	
+	def some(self):
+		return "some"
+	
+	def some(self, some=""):
+		return
+
+	some = ""
+
+# some is the variable defined at last	
+Hello.some
+""
+
+class Hello:
+	some = ""
+	def __init__(self):
+		return
+	
+	def some():
+		return ""
+	
+	def some(self):
+		return "some"
+	
+	def some(self, some=""):
+		return
+
+# Here the instance method is the last. It is unbound because it is being called on class 
+# rather than its instance
+Hello.some
+<unbound method Hello.some>
+```
+
+
+###### Class and instance variables
+Here empCount is a class variable.
+```
+class Employee:
+   'Common base class for all employees'
+   empCount = 0
+
+   def __init__(self, name, salary):
+      self.name = name
+      self.salary = salary
+      Employee.empCount += 1
+   
+   def displayCount(self):
+     print "Total Employee %d" % Employee.empCount
+
+   def displayEmployee(self):
+      print "Name : ", self.name,  ", Salary: ", self.salary
+```
+
+```
+class Employee:
+   'Common base class for all employees'
+   empCount = 0
+
+   def __init__(self, name, salary):
+      self.name = name
+      self.salary = salary
+      Employee.empCount += 1
+   
+   def displayCount(self):
+     print "Total Employee %d" % Employee.empCount
+
+   def displayEmployee(self):
+      print "Name : ", self.name,  ", Salary: ", self.salary
+
+"This would create first object of Employee class"
+emp1 = Employee("Zara", 2000)
+"This would create second object of Employee class"
+emp2 = Employee("Manni", 5000)
+emp1.displayEmployee()
+emp2.displayEmployee()
+print "Total Employee %d" % Employee.empCount
+```
+
+Generally speaking, instance variables are for data unique to each instance and class variables are for attributes and methods shared by all instances of the class:
+
+```
+class Dog:
+
+    kind = 'canine'         # class variable shared by all instances
+
+    def __init__(self, name):
+        self.name = name    # instance variable unique to each instance
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.kind                  # shared by all dogs
+'canine'
+>>> e.kind                  # shared by all dogs
+'canine'
+>>> d.name                  # unique to d
+'Fido'
+>>> e.name                  # unique to e
+'Buddy'
+```
+As discussed in A Word About Names and Objects, shared data can have possibly surprising effects with involving mutable objects such as lists and dictionaries. For example, the tricks list in the following code should not be used as a class variable because just a single list would be shared by all Dog instances:
+```
+class Dog:
+
+    tricks = []             # mistaken use of a class variable
+
+    def __init__(self, name):
+        self.name = name
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.add_trick('roll over')
+>>> e.add_trick('play dead')
+>>> d.tricks                # unexpectedly shared by all dogs
+['roll over', 'play dead']
+```
+Correct design of the class should use an instance variable instead:
+
+```
+class Dog:
+
+    def __init__(self, name):
+        self.name = name
+        self.tricks = []    # creates a new empty list for each dog
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.add_trick('roll over')
+>>> e.add_trick('play dead')
+>>> d.tricks
+['roll over']
+>>> e.tricks
+['play dead']
+```
+
+###### Built-in class attributes/variables
+Every Python class keeps following built-in attributes and they can be accessed using dot operator like any other attribute −
+* ***dict***: Dictionary containing the class's namespace.
+* ***doc***: Class documentation string or none, if undefined.
+* ***name***: Class name.
+* ***module***: Module name in which the class is defined. This attribute is "***main***" in interactive mode.
+* ***bases***: A possibly empty tuple containing the base classes, in the order of their occurrence in the base class list.
+
+```
+Employee.__doc__: Common base class for all employees
+Employee.__name__: Employee
+Employee.__module__: __main__
+Employee.__bases__: ()
+Employee.__dict__: {'__module__': '__main__', 'displayCount':
+<function displayCount at 0xb7c84994>, 'empCount': 2, 
+'displayEmployee': <function displayEmployee at 0xb7c8441c>, 
+'__doc__': 'Common base class for all employees', 
+'__init__': <function __init__ at 0xb7c846bc>}
+```
+
+###### Static Methods
+Static methods are a special case of methods. Sometimes, you'll write code that belongs to a class, but that doesn't use the object itself at all. 
+Here **staticmethod** is a decorator.
+For example:
+```
+class Pizza(object):
+    @staticmethod
+    def mix_ingredients(x, y):
+        return x + y
+ 
+    def cook(self):
+        return self.mix_ingredients(self.cheese, self.vegetables)
+```
+Static methods improves readability of the code using descriptor
+It allows us to override the mix_ingredients method in a subclass. If we used a function mix_ingredients defined at the top-level of our module, a class inheriting from Pizza wouldn't be able to change the way we mix ingredients for our pizza without overriding cook itself.
+    
+###### Class Methods
+Class methods are methods that are not bound to an object, but to… a class!
+```
+>>> class Pizza(object):
+...     radius = 42
+...     @classmethod
+...     def get_radius(cls):
+...         return cls.radius
+... 
+>>> 
+>>> Pizza.get_radius
+<bound method type.get_radius of <class '__main__.Pizza'>>
+>>> Pizza().get_radius
+<bound method type.get_radius of <class '__main__.Pizza'>>
+>>> Pizza.get_radius is Pizza().get_radius
+True
+>>> Pizza.get_radius()
+42
+>>> Pizza().get_radius()
+42
+```
+
+###### Functions
+All the double underscore methods are defined in the classes.
+```
+def some():
+	return "some"
+
+# Str class is of class "type"
+str.__class__
+<type 'type'>
+
+# Creating a new instance of str
+str()
+""
+
+# class of string
+"".__class__
+<type 'str'>
+
+# class of class
+"".__class__.__class__
+<type 'type'>
+
+# Class of String
+abc = " "
+abc.__class__
+<type 'str'>
+
+# this returns function object
+some
+<function some at 0x10053c230>
+
+# Class to which functions belong
+some.__class__
+<type 'function'>
+
+# Functions accepted
+dir(some)
+['__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__doc__', '__format__', '__get__', '__getattribute__', '__globals__', '__hash__', '__init__', '__module__', '__name__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'func_closure', 'func_code', 'func_defaults', 'func_dict', 'func_doc', 'func_globals', 'func_name']
+```
+* ***self*** is the class instance object
+* ***func*** is the function object
+* ***doc*** is the method’s documentation 
+* ***name*** is the method name
+
+###### Summary
+* **_single_leading_underscore:** weak "internal use" indicator.  E.g. "from M import *" does not import objects whose name starts with an underscore.
+* **single_trailing_underscore_:** used by convention to avoid conflicts with Python keyword, e.g. Tkinter.Toplevel(master, class_='ClassName')
+* **__double_leading_underscore:** when naming a class attribute, invokes name mangling (inside class FooBar, __boo becomes _FooBar__boo; see below).
+* ***double_leading_and_trailing_underscore*****:** "magic" objects or attributes that live in user-controlled namespaces.  E.g. ***init***, ***import*** or ***file***.  Never invent such names; only use them as documented.
+
+###### Private Instance Variables (_x Single Underscore)
+Use _one_underline to **mark you methods as not part of the API**.
+Python **doesn't have real private methods**, so one underline in the beginning of a method or attribute means you shouldn't access this method, because it's not part of the API. 
+“Private” instance variables that cannot be accessed except from inside an object don’t exist in Python. However, there is a convention that is followed by most Python code: a name prefixed with an underscore 
+It's very common when using properties:
+```
+def _get_errors(self):
+    if self._errors is None:
+        self.full_clean()
+    return self._errors
+```
+
+###### Base Methods/Variables or Magic Objects (***x*** Double underscore methods)
+When you see a method like ***this***, the rule is simple: don't call it. Why? Because it means it's a method python calls, not you.
+**These generraly are used by python to perform specific operations.**
+You can always override your parent class methods. One reason for overriding parent's methods is because you may want special or different functionality in your subclass.
+* ***init*** ( self [,args...] ): Constructor (with any optional arguments)
+  * Sample Call : obj = className(args)
+* ***del***( self ): Destructor, deletes an object
+  * Sample Call : del obj
+* ***repr***( self ): Evaluatable string representation
+  * Sample Call : repr(obj)
+* ***str***( self ): Printable string representation
+  * Sample Call : str(obj)
+* ***cmp*** ( self, x ): Object comparison
+  * Sample Call : cmp(obj, x)
+    **Overloading base methods**
+```
+class Vector:
+   def __init__(self, a, b):
+      self.a = a
+      self.b = b
+
+   def __str__(self):
+      return 'Vector (%d, %d)' % (self.a, self.b)
+   
+   def __add__(self,other):
+      return Vector(self.a + other.a, self.b + other.b)
+
+v1 = Vector(2,10)
+v2 = Vector(5,-2)
+print v1 + v2
+# When the above code is executed, it produces the following result −
+Vector(7,8)
+```
+
+###### Non Overridable Variables/Methods (__x double underscore variables)
+An object's attributes may or may not be visible outside the class definition. 
+So when you create a method starting with __ you're saying that you don't want anybody to override it, it will be accessible just from inside the own class. 
+**name mangling**
+It should not be used to mark a method as private, the goal here is to avoid your method to be overridden by a subclass. It is not private as it can still be accessed by using _ClassName__x
+You need to name attributes with a double underscore prefix, and those attributes then are not be directly visible to outsiders.
+```
+class JustCounter:
+   __secretCount = 0
+  
+   def count(self):
+      self.__secretCount += 1
+      print self.__secretCount
+
+counter = JustCounter()
+counter.count()
+counter.count()
+print counter.__secretCount
+```
+When the above code is executed, it produces the following result −
+```
+1
+2
+Traceback (most recent call last):
+  File "test.py", line 12, in <module>
+    print counter.__secretCount
+AttributeError: JustCounter instance has no attribute '__secretCount'
+```
+Python protects those members by internally changing the name to include the class name. You can access such attributes as object._className__attrName. If you would replace your last line as following, then it works for you −
+```
+print counter._JustCounter__secretCount
+```
+
+###### Constructor and Destructor Magic Methods of a class
+We can customize these methods. For example in the below example, ***del***() destructor prints the class name of an instance that is about to be destroyed
+```
+class Point:
+   def __init( self, x=0, y=0):
+      self.x = x
+      self.y = y
+   def __del__(self):
+      class_name = self.__class__.__name__
+      print class_name, "destroyed"
+```
+You normally will not notice when the garbage collector destroys an orphaned instance and reclaims its space. But a class can implement the special method ***del***(), called a destructor, that is invoked when the instance is about to be destroyed. This method might be used to clean up any non memory resources used by an instance.
+
+###### Attribute Access
+
+
+###### Getter and Setter methods
+One underline in beginning
+Python doesn't have real private methods, so one underline in the beginning of a method or attribute means you shouldn't access this method, because it's not part of the API. It's very common when using properties:
+
+###### Decorators
+
+###### Properties
+These are class_object.width
+Used when we want special variables that are computed on the fly
+```
+    @property
+    def width(self):
+        return self.bbox[2] - self.bbox[0]
+
+    @property
+    def height(self):
+        return self.bbox[3] - self.bbox[1]
+
+    @property
+    def layout(self):
+        if hasattr(self, "_layout"): return self._layout
+        self._layout = self.pdf.process_page(self.page_obj)
+        return self._layout
+
+    @property
+    def objects(self):
+        if hasattr(self, "_objects"): return self._objects
+        self._objects = self.parse_objects()
+        return self._objects
+```
+        
+
+Inheritance
+Multiple Inheritance
+# =============================================
+# Python Encoding
+Unicode
+- Unicode contains a far larger set of strings
+- Converting it into ASCII which is the one interpreted by most programming languages is a must.
+> > > a = u'hello'
+> > > a
+> > > u'hello'
+> > > str(a)
+> > > 'hello'
+
+A = u'\u2014'
+str(A)
+*** UnicodeEncodeError: 'ascii' codec can't encode character u'\u2014' in position 0: ordinal not in range(128)
+
+u'hello world'.encode('utf-8')
+'hello world'
+
+UTF-8 is an encoding scheme. Other encoding schemes include UTF-16 (with two different byte orders) and UTF-32. (For some confusion, a UTF-16 scheme is called “Unicode” in Microsoft software.)
+
+ASCII defines codepoint values (they were not called codepoints until Unicode came along) 0-127, but it does not define their encodings. All language encodings use the same values as ASCII for their first 128 characters. UTF-8, ISO encodings, Latin encodings, etc are all 8bit encodings that support ASCII values. UTF-16 and UTF-32 are 16/32bit encodings that also support ASCII values. Codepoint values and their encoded Codeunit values within a given encoding are two separate things.
+
+> > > u'hello world'.encode('utf-8')
+> > > 'hello world'
+
+> > > > u'hellò world'.encode('utf-8')
+> > > > 'hell\xc3\xb2 world'
+
+> > > u'hellò world'.encode('latin-1')
+> > > 'hell\xf2 world'
+
+text = u'\u2014'
+text.encode("utf-8")
+'\xe2\x80\x94'
+
+http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
+
+When printing it prints the unicode
+print text
+—
+
+If taking example of the dash above (-), its a special unicode dash. There can be a mapping between that and the readable version of the dash. 
+
+If it is not there then we need tp 
+
 
 # =============================================
 # Python Tools/Utilities
@@ -961,3 +1525,254 @@ print(sys.path)
 # Python Tools/Utilities - Os module
 import os
 os.environ['PYTHONPATH'].split(os.pathsep)
+
+
+###### Itertools
+Remove elements from list using selectors. This method means you only generate the selectors once (and itertools.compress() should be nice and fast).
+
+a=["a", "b", "c", "d", "e"]
+b=[1, 2, None, 3, 4]
+selectors = [x is not None for x in b]
+list(itertools.compress(a, selectors))
+['a', 'b', 'd', 'e']
+list(itertools.compress(b, selectors))
+[1, 2, 3, 4]
+
+
+dict([(2,1),(3,1),(2,2)])
+{2: 2, 3: 1}
+
+This is for list
+[ [ (val, i) for val in value_cluster ] for i, value_cluster in enumerate(clusters) ]
+
+This is for tuples
+( something for some in some )
+
+###### chain()
+p, q, ...	p0, p1, ... plast, q0, q1, ...	
+chain('ABC', 'DEF') --> A B C D E F
+
+###### compress()
+data, selectors	(d[0] if s[0]), (d[1] if s[1]), ...
+compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F
+
+dropwhile()	pred, seq	seq[n], seq[n+1], starting when pred fails	dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1
+
+###### groupby()
+iterable[, keyfunc]	
+sub-iterators grouped by value of keyfunc(v)	 
+```
+things = [("animal", "bear"), ("animal", "duck"), ("plant", "cactus"), ("vehicle", "speed boat"), ("vehicle", "school bus")]
+
+for key, group in groupby(things, lambda x: x[0]):
+    for thing in group:
+        print "A %s is a %s." % (thing[1], key)
+    print " "
+```
+
+
+Let’s say we wanted to ‘group’ together all the animals that are the same. Instead of looping through all the elements and keep temporary lists, let’s use itertools.groupby.
+```
+animals = ['cow', 'cow', 'bird', 'pony', 'pony', 'pony', 'fish', 'cow']
+for key, group in itertools.groupby(animals):
+    print key, group
+We effectively get :
+cow <itertools._grouper object at 0x7faa6266af50>
+bird <itertools._grouper object at 0x7faa6266af90>
+pony <itertools._grouper object at 0x7faa6266af50>
+fish <itertools._grouper object at 0x7faa6266af90>
+cow <itertools._grouper object at 0x7faa6266af50>
+```
+
+###### ifilter()
+pred, seq	
+elements of seq where pred(elem) is true
+ifilter(lambda x: x%2, range(10)) --> 1 3 5 7 9
+
+###### ifilterfalse()
+pred, seq	
+elements of seq where pred(elem) is false	
+ifilterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8
+
+###### islice()
+seq, [start,] stop [, step]	elements from seq[start:stop:step]islice('ABCDEFG', 2, None) --> C D E F G
+
+###### imap()
+func, p, q, ...	func(p0, q0), func(p1, q1), ...	
+imap(pow, (2,3,10), (5,2,3)) --> 32 9 1000
+
+###### starmap()
+func, seq, func(*seq[0]), func(*seq[1]), ...	
+starmap(pow, [(2,5), (3,2), (10,3)]) --> 32 9 1000
+
+###### tee()
+it, n	it1, it2, ... itn splits one iterator into n	 
+###### takewhile()
+pred, seq	seq[0], seq[1], until pred fails	takewhile(lambda x: x<5, [1,4,6,4,1]) --> 1 4
+
+izip()	
+p, q, ...	(p[0], q[0]), (p[1], q[1]), ...	
+izip('ABCD', 'xy') --> Ax By
+
+izip_longest()	
+p, q, ...	(p[0], q[0]), (p[1], q[1]), ...	
+izip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-
+
+Sort according to value
+chars_sorted = sorted(chars, key=itemgetter("x0"))
+
+###### attr_getter
+attr_getter = itemgetter(attr)
+b = {"a": "b"}
+b.get("a")
+
+###### Map
+Map applies a function to all the items in an input_list. Here is the blueprint:
+map(function_to_apply, list_of_inputs)
+
+```
+items = [1, 2, 3, 4, 5]
+squared = []
+for i in items:
+    squared.append(i**2)
+
+items = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x**2, items))
+```
+
+Most of the times we use lambdas with map so I did the same. Instead of a list of inputs we can even have a list of functions!
+```
+def multiply(x):
+    return (x*x)
+def add(x):
+    return (x+x)
+
+funcs = [multiply, add]
+for i in range(5):
+    value = list(map(lambda x: x(i), funcs))
+    print(value)
+
+# x(i) means pass i to the variable
+# Output:
+# [0, 0]
+# [1, 2]
+# [4, 4]
+# [9, 6]
+# [16, 8]
+```
+
+
+###### Filter
+As the name suggests, filter creates a list of elements for which a function returns true. Here is a short and concise example:
+
+```
+number_list = range(-5, 5)
+less_than_zero = list(filter(lambda x: x < 0, number_list))
+print(less_than_zero)
+# Output: [-5, -4, -3, -2, -1]
+```
+
+###### Reduce
+Reduce is a really useful function for performing some computation on a list and returning the result. For example, if you wanted to compute the product of a list of integers.
+
+from functools import reduce
+product = reduce((lambda x, y: x * y), [1, 2, 3, 4])
+
+# Output: 24
+
+###### sorted
+A simple ascending sort is very easy -- just call the sorted() function. It returns a new sorted list:
+```
+sorted([5, 2, 3, 1, 4])
+[1, 2, 3, 4, 5]
+```
+
+You can also use the list.sort() method of a list. It modifies the list in-place (and returns None to avoid confusion). Usually it's less convenient than sorted() - but if you don't need the original list, it's slightly more efficient.
+```
+a = [5, 2, 3, 1, 4]
+a.sort()
+a
+[1, 2, 3, 4, 5]
+```
+
+Another difference is that the list.sort() method is only defined for lists. In contrast, the sorted() function accepts any iterable.
+```
+sorted({1: 'D', 2: 'B', 3: 'B', 4: 'E', 5: 'A'})
+[1, 2, 3, 4, 5]
+```
+
+list.sort() and sorted() added a key parameter to specify a function to be called on each list element prior to making comparisons.
+
+For example, here's a case-insensitive string comparison:
+```
+sorted("This is a test string from Andrew".split(), key=str.lower)
+['a', 'Andrew', 'from', 'is', 'string', 'test', 'This']
+```
+
+The value of the key parameter should be a function that takes a single argument and returns a key to use for sorting purposes. This technique is fast because the key function is called exactly once for each input record.
+
+A common pattern is to sort complex objects using some of the object's indices as a key. For example:
+```
+student_tuples = [
+        ('john', 'A', 15),
+        ('jane', 'B', 12),
+        ('dave', 'B', 10),
+]
+sorted(student_tuples, key=lambda student: student[2])   # sort by age
+[('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
+```
+The same technique works for objects with named attributes. For example:
+
+```
+class Student:
+        def __init__(self, name, grade, age):
+                self.name = name
+                self.grade = grade
+                self.age = age
+        def __repr__(self):
+                return repr((self.name, self.grade, self.age))
+        def weighted_grade(self):
+                return 'CBA'.index(self.grade) / float(self.age)
+
+student_objects = [
+        Student('john', 'A', 15),
+        Student('jane', 'B', 12),
+        Student('dave', 'B', 10),
+]
+sorted(student_objects, key=lambda student: student.age)   # sort by age
+[('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
+```
+###### enumerate
+A new built-in function, enumerate(), will make certain loops a bit clearer. enumerate(thing), where thing is either an iterator or a sequence, returns a iterator that will return (0, thing[0]), (1, thing[1]), (2, thing[2]), and so forth.
+
+A common idiom to change every element of a list looks like this:
+```
+for i in range(len(L)):
+    item = L[i]
+    # ... compute some result based on item ...
+    L[i] = result
+
+#This can be rewritten using enumerate() as:
+
+for i, item in enumerate(L):
+    # ... compute some result based on item ...
+    L[i] = result
+```
+
+
+###### isinstance
+Specifying multiple instances
+isinstance(some_var, (str, int)):
+
+# Pandas
+In [1]: import pandas as pd
+In [2]: import numpy as np
+In [3]: import matplotlib.pyplot as plt
+
+"a".***class***
+
+###### repr
+The result of repr('foo') is the string 'foo'. In your Python shell, the result of the expression is expressed as a representation too, so you're essentially seeing repr(repr('foo')).
+
+###### eval
+eval calculates the result of an expression. The result is always a value (such as a number, a string, or an object). Multiple variables can refer to the same value, as in:

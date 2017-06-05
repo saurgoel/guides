@@ -100,7 +100,61 @@ f) a <name> that has a "latest" tag satisfying (e)
 g) a <git remote url> that resolves to (a)
 
 
-###### NODE MODULES
+# package.json
+# =====================================
+Most people are aware that is is possible to define scripts in package.json which can be run with npm start or npm test, but npm scripts can do a lot more than simply start servers and run tests.
+start, actually defaults to node server.js, so the above declaration is redundant. In order for the test command to work with mocha, I also need to include it in the devDependencies section (it works in the dependencies section also, but since it is not needed in production it is better to declare it here).
+
+The reason the above test command, mocha --reporter spec test, works is because npm looks for binaries inside node_modules/.bin and when mocha was installed it installed mocha into this directory.
+
+The code that describes what will be installed into the bin directory is defined in mocha's package.json and it looks like this:
+
+// Macha package.json
+{
+  "name": "mocha",
+  ...
+  "bin": {
+    "mocha": "./bin/mocha",
+    "_mocha": "./bin/_mocha"
+  },
+  ...
+}
+As we can see in the above declaration, mocha has two binaries, mocha and _mocha.
+
+Many packages have a bin section, declaring scripts that can be called from npm similar to mocha. To find out what binaries we have in our project we can run ls node_modules/.bin
+
+# Scripts availble in one of my projects
+$ ls node_modules/.bin
+_mocha      browserify  envify      jshint
+jsx         lessc       lesswatcher mocha
+nodemon     uglifyjs    watchify
+
+
+###### Concurrent
+Sometimes it is also nice to be able to run multiple commands at the concurrently. This is easily done by using &amp; to run them as background jobs.
+
+```
+  "scripts": {
+    // Run watch-js, watch-less and watch-server concurrently
+    "watch": "npm run watch-js & npm run watch-less & npm run watch-server",
+    "watch-js": "watchify app/js/main.js -t reactify -o static/bundle.js -dv",
+    "watch-less": "nodemon --watch app/less/*.less --ext less --exec 'npm run build-less'",
+    "watch-server": "nodemon --ignore app --ignore static server.js"
+  },
+  // Add required dependencies
+  "devDependencies": {
+    "watchify": "^0.6.2",
+    "nodemon": "^1.0.15"
+  }
+```
+The above scripts contain a few interesting things. First of all watch uses &amp; to run three watch jobs concurrently. When the command is killed, by pressing Ctrl-C, all the jobs are killed, since they are all run with the same parent process.
+
+watchify is a way to run browserify in watch mode. watch-server uses nodemon in the standard way and restarts the server whenever a relevant file has changed.
+
+
+
+# Node Modules
+# =====================================
 By default, locally-installed packages go into ./node_modules. global ones go into the prefix config variable (/usr/local by default).
 You can run npm config list to see your current config and npm config edit to change it
 
@@ -220,117 +274,6 @@ npm --version
 ```
 
 
-###### server.js
-Express
-var express = require('express')
-    , http = require('http')
-    , path = require('path')
-    , namespace = require('express-namespace');
-var app = express(); 
-app.configure(function () {
-    app.set('port', process.env.PORT || 3000);
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
-    app.use(express.favicon());
-    app.use(express.logger('dev'));
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(app.router);
-    app.use(express.static(path.join(__dirname, 'public')));
-});
-app.configure('development', function () {
-    app.use(express.errorHandler());
-});
- 
-// router
-require('./application/router')(app);
- 
-// server
-http.createServer(app).listen(app.get('port'), function () {
-    console.log("Express server listening on port " + app.get('port'));
-});
-module.exports = app;
-
-having namespace for static files
-app.use('/static', express.static('public'))
-
-
-_________________________________________________
-# LOGGING
-For better logging need to have
-- timestamps
-- Writing readable log lines are equally important for both humans and computers: you'd like to quickly understand what is going on, while machines have to parse the file as well.
-- Support for log levels. Log events can have different severity levels - in some cases, you just want to log events with at least a warning level, sometimes log lines have to be more verbose.
-
-
-Logging in modules
-
-http://tostring.it/2014/06/23/advanced-logging-with-nodejs/
-
-Morgan library
-Logging in application (https://www.npmjs.com/package/winston)
-https://github.com/bithavoc/express-winston
-
-When it comes to your application, you can do more sophisticated application logging. For that, you can use one of the most popular package called winston. Winston is a multi-transport async logging library for Node.js.
-
-const winston = require('winston')
-winston.log('info', 'Hello log files!', {  
-  someKey: 'some-value'
-})
-
-By default, winston ships with the following log levels (custom levels can be added):
-error,
-warn,
-info,
-verbose,
-debug,
-and silly.
-
-
-winston.level = 'debug'  
-At RisingStack, we usually set the configuration from an environment variable called LOG_LEVEL. This way we can dynamically change what should be logged:
-winston.level = process.env.LOG_LEVEL  
-
-Writing to stdout
-Unless you are using something like forever that automatically logs, you can write to custom log files youself and do log rotation as well
-See here: https://www.npmjs.com/package/morgan
-
-
-# PM2 vs Forever
-
-
-
-
-
-
-_________________________________________________
-server.js
-Difference between http vs express server creation
-const app = express()
-app.listen() creates the same thing
-The second form (creating an HTTP server yourself, instead of having Express create one for you) is useful if you want to reuse the HTTP server, for example to run socket.io within the same HTTP server instance:
-
-var express = require('express');
-var app     = express();
-var server  = require('http').createServer(app);
-var io      = require('socket.io').listen(server);
-...
-server.listen(1234);
-However, app.listen() also returns the HTTP server instance, so with a bit of rewriting you can achieve something similar without creating an HTTP server yourself:
-
-var express   = require('express');
-var app       = express();
-
-// app.use/routes/etc...
-
-var server    = app.listen(3033);
-var io        = require('socket.io').listen(server);
-
-io.sockets.on('connection', function (socket) {
-  ...
-});
-
-
 # BASICS
 # =======================================================
 ###### Version of Node
@@ -421,12 +364,14 @@ PORT=3002 pm2 start -I 0 ./bin/www
 ```
 
 
-###### Using supervisord instead of pm2
+# Using Supervisord
+Using supervisord instead of pm2
 ```
 supervisor ./bin/www
 ```
 
-###### We can also start a screen/tmux session and leave it open
+# Using Tmuxinator
+We can also start a screen/tmux session and leave it open
 ```
 tmuxinator start amber
 ```
@@ -586,7 +531,11 @@ pm2 list appName
 https://keymetrics.io/2014/06/25/ecosystem-json-deploy-and-iterate-faster/
 there is an ecosystem file that is requried
 
+# LOGGING
+# =======================================================
 
+Morgan is another HTTP request logger middleware for Node.js. It simplifies the process of logging requests to your application.  You might think of Morgan as a helper that collects logs from your server, such as your request logs. It saves developers time because they don’t have to manually create common logs. It standardizes and automatically creates request logs.
+Morgan can operate standalone, but commonly it’s used in combination with Winston. Winston is able to transport logs to an external location, or query them when analyzing a problem.
 
 # TASK RUNNERS - GULP
 # =======================================================
@@ -615,6 +564,96 @@ Webpack and Browserify are package bundlers. Basically, they are designed to run
 The blurred line between runners and bundlers might be that bundlers can also do complex transformations or trans-pilations during their run-time, so they can do several things that task runners can do. In fact, between browserify and webpack there's probably around a hundred transformers that you can use to modify your source code. For comparison, there's at least 2000 gulp plugins listed on npm right now. So you can see that there are clear (hopefully... ;)) definitions of what works best for your application.
 
 That being said, you might see a complex project actually using both task-runners and package bundlers at the same time or in tandem. For example at my office, we use gulp to start our project, and webpack is actually run from a specific gulp task that creates the source bundles that we need to run our app in the browser. And because our app is isomorphic, we also bundle some of the server code.
+
+# PM2
+# =======================================================
+
+# Using Screen
+# =======================================================
+This might not be the accepted way, but I do it with screen, especially while in development because I can bring it back up and fool with it if necessary.
+
+screen
+node myserver.js
+> > CTRL-A then hit D
+> > The screen will detach and survive you logging off. Then you can get it back back doing screen -r. Hit up the screen manual for more details. You can name the screens and whatnot if you like.
+
+# FOREVER
+# =======================================================
+npm install forever --save-dev
+./node_modules/bin/forever 
+
+forever start app.js
+
+forever --help
+
+JSON Configuration
+// forever/development.json
+{
+    // Comments are supported
+    "uid": "app",
+    "append": true,
+    "watch": true,
+    "script": "index.js",
+    "sourceDir": "/home/myuser/app"
+}
+
+
+forever start ./forever/development.json
+forever start /home/myuser/app/forever/development.json
+./node_modules/.bin/forever stop build/server.js
+
+forever stopall
+forever restart
+forever restartall
+
+start               Start SCRIPT as a daemon
+stop                Stop the daemon SCRIPT by Id|Uid|Pid|Index|Script
+stopall             Stop all running forever scripts
+restart             Restart the daemon SCRIPT
+restartall          Restart all running forever scripts
+list                List all running forever scripts
+config              Lists all forever user configuration
+set <key> <val>     Sets the specified forever config <key>
+clear <key>         Clears the specified forever config <key>
+logs                Lists log files for all forever processes
+logs <script|index> Tails the logs for <script|index>
+columns add <col>   Adds the specified column to the output in `forever list`
+columns rm <col>    Removed the specified column from the output in `forever list`
+columns set <cols>  Set all columns for the output in `forever list`
+cleanlogs           [CAREFUL] Deletes all historical forever log files
+
+**forever.start (file, options)**
+Starts a script with forever. The options object is what is expected by the Monitor of forever-monitor.
+
+**forever.startDaemon (file, options)**
+Starts a script with forever as a daemon. WARNING: Will daemonize the current process. The options object is what is expected by the Monitor of forever-monitor.
+
+**forever.stop (index)**
+Stops the forever daemon script at the specified index. These indices are the same as those returned by forever.list(). This method returns an EventEmitter that raises the 'stop' event when complete.
+
+**forever.stopAll (format)**
+Stops all forever scripts currently running. This method returns an EventEmitter that raises the 'stopAll' event when complete.
+
+The format parameter is a boolean value indicating whether the returned values should be formatted according to the configured columns which can set with forever columns or programmatically forever.config.set('columns').
+
+**forever.list (format, callback)**
+Returns a list of metadata objects about each process that is being run using forever. This method will return the list of metadata as such. Only processes which have invoked forever.startServer() will be available from forever.list()
+
+The format parameter is a boolean value indicating whether the returned values should be formatted according to the configured columns which can set with forever columns or programmatically forever.config.set('columns').
+
+**forever.tail (target, options, callback)**
+Responds with the logs from the target script(s) from tail. There are two options:
+
+length (numeric): is is used as the -n parameter to tail.
+stream (boolean): is is used as the -f parameter to tail.
+**forever.cleanUp ()**
+Cleans up any extraneous forever *.pid files that are on the target system. This method returns an EventEmitter that raises the 'cleanUp' event when complete.
+
+**forever.cleanLogsSync (processes)**
+Removes all log files from the root forever directory that do not belong to current running forever processes. Processes are the value returned from Monitor.data in forever-monitor.
+
+forever.startServer (monitor0, monitor1, ..., monitorN)
+Starts the forever HTTP server for communication with the forever CLI. NOTE: This will change your process.title. This method takes multiple forever.Monitor instances which are defined in the forever-monitor dependency.
 
 
 # TASK RUNNERS - GRUNT

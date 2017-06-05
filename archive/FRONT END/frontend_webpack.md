@@ -283,7 +283,7 @@ node app.bundle.js
 ["dave", "henry", "martha"]
 ```
 
-# Configuration
+###### Configuration
 Webpack is a very flexible module bundler. It offers a lot of advanced features, but not all features are exposed via the command-line interface. To gain full access to webpack’s flexibility, we need to create a “configuration file”.
 Webpack takes an entry module, reads the entire dependency tree, and bundles it all together as a single file (assuming a simple configuration). We are going to do this for the backend as well. Let's start with this simple config, which tells it to take the entry point src/index.js and generate a file at build/bundle.js.
 
@@ -316,32 +316,11 @@ module.exports = config;
 **BUILD_DIR:** represents the directory path of the bundle file output.
 Instead of the above we can directly use the global ___dir.
 
-# Context
-Starting from the context folder.
-If context is specified no need to provide the fill paths for example in entry
-```
-const path = require('path');
-const webpack = require('webpack');
-module.exports = {
-  context: path.resolve(__dirname, './src'),
-  entry: {
-    app: './app.js',
-  },
-  output: {
-    path: path.resolve(__dirname, './dist'),
-    filename: '[name].bundle.js',
-  },
-};
-```
-
-# 1. Entry
+###### Entry
 name of the top level file or set of files that we want to include in our build, can be a single file or an array of files. In our build, we only pass in our main file (app.js).
 If you need multiple bundles for multiple HTML pages you can use the “multiple entry points” feature. It will build multiple bundles at once. Additional chunks can be shared between these entry chunks and modules are only built once.
 Entry tells the Webpack where the root module or the starting point is. This can be a String, an Array or an Object. This could confuse you but the different types are used for different purposes. If you have a single starting point (like most apps), you can use any format and the result will be the same.
 But, if you want to append multiple files that are NOT dependent on each other, you can use the Array format.
-
-Every import (ES6) or require() (Node) dependency it finds as it parses the code, it bundles for the final build. It then searches those dependencies, and those dependencies’ dependencies, until it reaches the very end of the “tree”—only bundling what it needed to, and nothing else.
-
 ```
 // webpack.config.js
 module.exports = {
@@ -355,14 +334,15 @@ module.exports = {
 
 Now, let’s say you have true multi-page application, not a SPA w/ multi-views, but with multiple HTML files (index.html and profile.html). You can then tell Webpack to generate multiple bundles at once by using entry object.
 ```
+// webpack.config.js
 module.exports = {
   entry: {
-    ProfileFinal: './profile.js',
-    FeedFinal: './feed.js'
+    Profile: './profile.js',
+    Feed: './feed.js'
   },
   output: {
     path: 'build',
-    // Template based on keys in entry above (So produces ProfileFinal.js and FeedFinal.js)        	filename: '[name].js'
+    filename: '[name].js' // Template based on keys in entry above
   }
 };
 ```
@@ -403,25 +383,13 @@ an object containing your output configuration. In our build, we only specify th
 How to specify a directory and pack all the files present in it??????
 name-bundle.js
 
-# Externals
-When bundling with Webpack for the backend - you usually don't want to bundle its node_modules dependencies. This library creates an externals function that ignores node_modules when bundling in Webpack.
-When we are building stuff for backend the server.js runs on the backend system itself. On the system all the modules are already present so we dont need to require them.
-Only when we are shipping the modules for the client side do we need to bundle them.
-
-On the Server side rendering the whole code runs on the server and html is returned. The following command runs server.js
-node build/server.js
-This file is responsbile for running the javascript in the background and producing the html. 
-Once the html reaches the browser the client javascript takes over it.
-
-What about css
-
-# 2.Resolve
-```
+# Resolve
 myfile = require('../../mydir/myfile.js') 
-//but I'd like to write
+but I'd like to write
+
 myfile = require('mydir/myfile.js') 
-```
-Resolve is used to **find “import” and “require” references that are not immediately available in the current path**. For example: how a call to require("../homepage") might be translated to ("../homepage/index.js") or how an import react from 'react' might be interpreted if your node_modules folder is named something else. For more configuration options click here
+
+Resolve is used to find “import” and “require” references that are not immediately available in the current path. For example: how a call to require("../homepage") might be translated to ("../homepage/index.js") or how an import react from 'react' might be interpreted if your node_modules folder is named something else. For more configuration options click here
 
 The resolving process is pretty simple and distinguishes between three types of requests:
 ```
@@ -431,7 +399,8 @@ module path: require("module"), require("module/lib/file")
 ```
 https://webpack.github.io/docs/resolving.html
 
-###### resolve.root
+
+**resolve.root**
 The directory (absolute path) that contains your modules. May also be an array of directories. This setting should be used to add individual directories to the search path.
 ```
 var path = require('path');
@@ -443,14 +412,6 @@ resolve: {
   ]
 }
 ```
-
-**Extensions**
-Many Webpack config files have a resolve extensions property that has an empty string like shown below. The empty string is there to help resolve imports without extensions like: require(“./myJSFile”) or import myJSFile from ‘./myJSFile’ without file extensions.
-{
- resolve: {
-   extensions: [‘’, ‘.js’, ‘.jsx’]
- }
-}
 
 ###### resolve.alias
 Replace modules with other modules or paths. Expects an object with keys being module names. The value is the new path. It’s similar to a replace but a bit more clever.
@@ -510,268 +471,14 @@ The module is looked up in each module directory and resolved according to “Re
 Resolve’s configuration option resolve.alias renames modules.
 When trying to “resolve a module path” the module name is matched to the resolve.alias option. When there is a match, the matching module name is replaced with the alias.
 
-# ===================================
-# Stats
-The stats option lets you precisely control what bundle information gets displayed. This can be a nice middle ground if you don't want to use quiet or noInfo because you want some bundle information, but not all of it.
-```
-stats: {
-  // Add asset Information
-  assets: true,
-  // Sort assets by a field
-  assetsSort: "field",
-  // Add information about cached (not built) modules
-  cached: true,
-  // Show cached assets (setting this to `false` only shows emitted files)
-  cachedAssets: true,
-  // Add children information
-  children: true,
-  // Add chunk information (setting this to `false` allows for a less verbose output)
-  chunks: true,
-  // Add built modules information to chunk information
-  chunkModules: true,
-  // Add the origins of chunks and chunk merging info
-  chunkOrigins: true,
-  // Sort the chunks by a field
-  chunksSort: "field",
-  // Context directory for request shortening
-  context: "../src/",
-  // `webpack --colors` equivalent
-  colors: true,
-  // Display the distance from the entry point for each module
-  depth: false,
-  // Display the entry points with the corresponding bundles
-  entrypoints: false,
-  // Add errors
-  errors: true,
-  // Add details to errors (like resolving log)
-  errorDetails: true,
-  // Exclude modules which match one of the given strings or regular expressions
-  exclude: [],
-  // Add the hash of the compilation
-  hash: true,
-  // Set the maximum number of modules to be shown
-  maxModules: 15,
-  // Add built modules information
-  modules: true,
-  // Sort the modules by a field
-  modulesSort: "field",
-  // Show performance hint when file size exceeds `performance.maxAssetSize`
-  performance: true,
-  // Show the exports of the modules
-  providedExports: false,
-  // Add public path information
-  publicPath: true,
-  // Add information about the reasons why modules are included
-  reasons: true,
-  // Add the source code of modules
-  source: true,
-  // Add timing information
-  timings: true,
-  // Show which exports of a module are used
-  usedExports: false,
-  // Add webpack version information
-  version: true,
-  // Add warnings
-  warnings: true
-  // Filter warnings to be shown (since webpack 2.4.0),
-  // can be a String, Regexp, a function getting the warning and returning a boolean
-  // or an Array of a combination of the above. First match wins.
-  warningsFilter: "filter" | /filter/ | ["filter", /filter/] | (warning) => ... return true|false
-};
-```
-
-# ===============================
-# Including/Excluding node_modules
-###### Include/Exclude modules to be bundled (Client vs Server node_modules)
-The difference between client and server js is that in client we import modules such as react, reactDom, bootstrap (which are ok to be bundled but loaders should not be run on them) whereas on the server js we import modules such as fs (file system), express, path etc. (which itself shouldnt be bundled)
-Client - Bundle modules but do not process using loader (exclude)
-Server - Do not bundle itself let alone process using loader
-When bundling, we want to exclude these files as they
-
-```
-var path = require('path');
-module.exports = {
-  entry: './src/main.js',
-  target: 'node',
-  output: {
-    path: path.join(__dirname, 'build'),
-    filename: 'backend.js'
-  }
-}
-```
-Webpack will load modules from the node_modules folder and bundle them in. This is fine for frontend code, but backend modules typically aren't prepared for this (i.e. using require in weird ways) or even worse are binary dependencies. We simply don't want to bundle in anything from node_modules.
-
-I wrote a small simple app so that you can try this out yourself: backend-with-webpack. In main.js, the entry point, it loads express and starts a server. If you try the above webpack configuration, you'll see this warning:
-```
-WARNING in ./~/express/lib/view.js
-Critical dependencies:
-50:48-69 the request of a dependency is an expression
- @ ./~/express/lib/view.js 50:48-69
-```
-I'm sure we could get express to fix this, but the major problem is binary dependencies. The simple thing to do is not to bundle node_modules. We can solve this using webpack's externals configuration option. **A module listed as an external will simply be left alone; it will not be bundled in.**
-**We just need to read the list of directories inside node_modules and give to externals.**
-Unfortunately the default behavior of externals is not what we want. **It assumes a browser environment, so require("foo") is turned into just foo**, a global variable. We want to keep the require. This is possible by creating an object with a key/value of each module name, and prefixing the value with "commonjs". The entire configuration is now this:
-```
-var webpack = require('webpack');
-var path = require('path');
-var fs = require('fs');
-
-var nodeModules = {};
-fs.readdirSync('node_modules')
-  .filter(function(x) {
-    return ['.bin'].indexOf(x) === -1;
-  })
-  .forEach(function(mod) {
-    nodeModules[mod] = 'commonjs ' + mod;
-  });
-
-module.exports = {
-  entry: './src/main.js',
-  target: 'node',
-  output: {
-    path: path.join(__dirname, 'build'),
-    filename: 'backend.js'
-  },
-  externals: nodeModules
-}
-```
-
-**Alternatively we can use webpack-node-externals**
-In order to exclude node_modules and native node libraries from bundling, you need to: Add target: 'node' to your webpack.config.js
-Use webpack-node-externals in order to exclude other node_modules.
-
-```
-var nodeExternals = require('webpack-node-externals');
-...
-module.exports = {
-    ...
-    target: 'node', // in order to ignore built-in modules like path, fs, etc. 
-    externals: [nodeExternals()], // in order to ignore all modules in node_modules folder 
-    ...
-};
-```
-
-###### Include/Exclude modules to be processed by loader
-```
-module.exports = {
-    context: __dirname,
-    target: 'node',
-    // ...
-    output: {
-        libraryTarget: 'commonjs'
-        // ...
-    },
-    module: {
-        loaders: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'babel-loader?{ "stage": 0, "optional": ["runtime"] }'
-            }
-        ]
-    }
-};
-```
-Here the node_modules are just excluded from the loader but are still bundled. From your config file, it seems like you're only excluding node_modules from being parsed with babel-loader, but not from being bundled.
-However, some imported/required files are not necessary to be transformed (most of the node_module have already been built). For example, **js files in "node_module" have been processed**. So there is no need to be transformed again by Babel loader. That is basically why we need "exclude: /node_modules/" in loader. If you dont exclude in loaders they would be transformed again which causes huge performance hit (In most of the cases the same node_module is required by all the tree nodes which makes it compilation again and again)
-Similarly, if you know what files to be transformed by a loader, you can use "include".
-Simply put, entry.js will include all the imported/required files. But among these files, only a few of them need to be transformed. That is why "loader" introduces "include" and "exclude".
-The problem is that without that exclude (or an include) webpack would traverse through the dependencies when you point to them at your code and process them. Even though that could work, it would come with a heavy performance penalty.
-
-*Also if we are excluding node_modules then The assumption is that npm packages should be in such a form by default that they don't need any processing. There are rare exceptions but most should be useable out of the box.*
-
-I dont understand your point. Let me make my question more explicit: suppose our entry.js requires "react", since the generated "bundle.js" s a self-inclusive file, it should include "react" related js files which are from "node_modules", correct here? If that is the case and we exclude "node_modules", the "react" related js files won't be included in "bundle.js". Then the "bundle.js" cannot work because "react" functions are not there. – 
-
-It will include React related files. It just won't process them through Babel. That's explicitly what we want to avoid here. That's what include/exclude say. React will still get bundled. We just don't pass it through Babel as it wouldn't make sense.
-http://www.pshrmn.com/tutorials/webpack/loaders/
-
-###### Excluding JS to use external js
-{
-        ...
-        externals: {
-            // Use external version of React
-            "react": "React"
-        },
-        plugins: [
-            new webpack.IgnorePlugin(/react/)
-        ]
-        ...
-}
 
 
-# ====================================
-# Target
-Because JavaScript can be written for both server and browser, webpack offers multiple deployment targets that you can set in your webpack configuration.
-
-module.exports = {
-  target: 'node'
-};
-In the example above, using node webpack will compile for usage in a Node.js-like environment (uses Node.js require to load chunks and not touch any built in modules like fs or path). The target: 'node' option tells webpack not to touch any built-in modules like fs or path.
-
-**async-node** - Compile for usage in a Node.js-like environment (uses fs and vm to load chunks asynchronously)
-**node** - Compile for usage in a Node.js-like environment (uses Node.js require to load chunks)
-**node-webkit** - Compile for usage in WebKit and uses JSONP for chunk loading. Allows importing of built-in Node.js modules and nw.gui (experimental)
-**web** - Compile for usage in a browser-like environment (default)
-**webworker** - Compile as WebWorker
-
-Default target is web
-```
-var path = require('path');
-var serverConfig = {
-  target: 'node',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'lib.node.js'
-  }
-  //…
-};
-
-var clientConfig = {
-  target: 'web', // <=== can be omitted as default is 'web'
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'lib.js'
-  }
-  //…
-};
-
-module.exports = [ serverConfig, clientConfig ];
-```
-
-# ===============================================
-# Output
-const config = {
-  output: {
-    filename: 'bundle.js',
-    path: '/home/proj/public/assets'
-  }
-};
-
-
-###### output.chunkFilename
-The filename of non-entry chunks as a relative path inside the output.path directory.
-[id] is replaced by the id of the chunk.
-[name] is replaced by the name of the chunk (or with the id when the chunk has no name).
-[hash] is replaced by the hash of the compilation.
-[chunkhash] is replaced by the hash of the chunk.
-
-###### ExportLibrary
-Which format to export the library:
-"var" - Export by setting a variable: var Library = xxx (default)
-"this" - Export by setting a property of this: this["Library"] = xxx
-"commonjs" - Export by setting a property of exports: exports["Library"] = xxx
-"commonjs2" - Export by setting module.exports: module.exports = xxx
-"amd" - Export to AMD (optionally named - set the name via the library option)
-"umd" - Export to AMD, CommonJS2 or as property in root
-Default: "var"
-If output.library is not set, but output.libraryTarget is set to a value other than var, every property of the exported object is copied (Except amd, commonjs2 and umd)
-
-# =================================================
 # Code Splitting
+# ============================================
 Webpack has two types of dependencies in its dependency tree: sync and async. Async dependencies act as split points and form a new chunk. After the chunk tree is optimized, a file is emitted for each chunk.
 
-# =================================================
 # Loaders
+# ============================================
 Webpack can only process JavaScript natively, but loaders are used to transform other resources into JavaScript. By doing so, every resource forms a module. 
 * Loaders can be chained. They are applied in a pipeline to the resource. The final loader is expected to return JavaScript; each other loader can return source in arbitrary format, which is passed to the next loader.
 * Loaders can be synchronous or asynchronous.
@@ -784,12 +491,14 @@ Webpack can only process JavaScript natively, but loaders are used to transform 
 * Plugins can give loaders more features.
 * Loaders can emit additional arbitrary files.
 
+
 **Options**
 test: A condition that must be met
 exclude: A condition that must not be met
 include: An array of paths or files where the imported files will be transformed by the loader
 loader: A string of “!” separated loaders
 loaders: An array of loaders as string
+
 
 “When you encounter this kind of file, do this with it”.
 **List of Loaders** - http://webpack.github.io/docs/list-of-loaders.html
@@ -874,66 +583,9 @@ Install the libraries you want to use (in this example, jQuery). We are using --
  }
 ```
 
-###### Babelrc file
-babel-loader uses “presets” configuration to know how to convert ES6 to ES5 and also how to parse React’s JSX to JS. We can pass the configuration via “query” parameter like below:
-```
-module: {
-  loaders: [
-    {
-      test: /\.jsx?$/,
-      exclude: /(node_modules|bower_components)/,
-      loader: 'babel',
-      query: {
-        presets: ['react', 'es2015']
-      }
-    }
-  ]
-}
-```
-However in many projects babel’s configuration can become very large. So instead you can keep those them in babel-loader’s configuration file called .babelrc file. babel-loader will automatically load the .babelrc file if it exists.
-So in many examples, you’ll see:
-```
-//webpack.config.js 
-module: {
-  loaders: [
-    {
-      test: /\.jsx?$/,
-      exclude: /(node_modules|bower_components)/,
-      loader: 'babel'
-    }
-  ]
-}
 
-//.bablerc
-{
- “presets”: [“react”, “es2015”]
-}
-```
-
-###### Chaining Loaders ( works right to left)
-```
-module: {
- loaders: [{
-  test: /\.css$/,
-  loader: ‘style!css’ <--(short for style-loader!css-loader)
- }]
-```
-Webpack searches for CSS files dependencies inside the modules. That is Webpack checks to see if a JS file has “require(myCssFile.css)”. If it finds the dependency, then the Webpack gives that file first to the “css-loader”
-css-loader loads all the CSS and CSS’ own dependencies (i.e @import otherCSS) into JSON. Webpack then passes the result to “style-loader”.
-style-loader to take the JSON and add it to a style tag — <style>CSS contents</style> and inserts the tag into the index.html file (in the head)
-
-# ============================================
-# Node Option
-Lastly, you can configure how webpack deals with variables like process, __dirname, and __filename with the node configuration option.
-
-
-# ============================================
-# Loaders vs Plugins
-As you might have realized, Loaders work at the individual file level during or before the bundle is generated.
-Where as Plugins work at bundle or chunk level and usually work at the end of the bundle generation process. And some Plugins like commonsChunksPlugins go even further and modify how the bundles themselves are created.
-
-# ============================================
 # Plugins
+# ============================================
 Plugins are additional node modules that usually work on the resulting bundle.
 Webpack features a rich plugin system. Most internal features are based on this plugin system. This allows you to customize webpack for your needs and distribute common plugins as open source.
 Plugins work at bundle or chunk level and usually work at the end of the bundle generation process. 
@@ -973,203 +625,45 @@ module.exports = {
 **OccurenceOrderPlugin** helps in reducing the file size of the resulting bundle.
 **UglifyJsPlugin** minifies and obfuscates the resulting bundle using UglifyJs.
 
-###### Common Chunks Plugin
-new webpack.optimize.CommonsChunkPlugin(options)
-**options.name or options.names (string|string[])**: The chunk name of the commons chunk. An existing chunk can be selected by passing a name of an existing chunk. If an array of strings is passed this is equal to invoking the plugin multiple times for each chunk name. If omitted and options.async or options.children is set all chunks are used, otherwise options.filename is used as chunk name.
-**options.filename (string)**: The filename template for the commons chunk. Can contain the same placeholder as output.filename. If omitted the original filename is not modified (usually output.filename or output.chunkFilename).
-options.minChunks (number|Infinity|function(module, count) -> boolean): The minimum number of chunks which need to contain a module before it’s moved into the commons chunk. The number must be greater than or equal 2 and lower than or equal to the number of chunks. Passing Infinity just creates the commons chunk, but moves no modules into it. By providing a function you can add custom logic. (Defaults to the number of chunks)
-**options.chunks (string[])**: Select the source chunks by chunk names. The chunk must be a child of the commons chunk. If omitted all entry chunks are selected.
-**options.children (boolean)**: If true all children of the commons chunk are selected
-**options.async (boolean|string)**: If true a new async commons chunk is created as child of options.name and sibling of options.chunks. It is loaded in parallel with options.chunks. It is possible to change the name of the output file by providing the desired string instead of true.
-options.minSize (number): Minimum size of all common module before a commons chunk is created.
 
-# Handling Stylesheets
-# ============================================
-1. ###### Basic Setup (Inline css Stylesheets)
-In the basic setup you can just embed css directly into the JS and dont need to make a separate bundled file. The styles would get rendered easily.
-**app/main.css**
-```
-body {
-  background: cornsilk;
-}
-```
-Require it so that webpack can find it.
-**app/index.js**
-```
-require('./main.css');
-```
-**css**
-```
-loaders: [
-        {
-          test: /\.css$/,
-          loaders: ['style', 'css'],
-          include: paths
-        }
-]
-```
-In this case, css-loader gets evaluated first, then style-loader. css-loader will resolve @import and url statements in our CSS files. style-loader deals with require statements in our JavaScript. A similar approach works with CSS preprocessors, like Sass and Less, and their loaders.
+# Babel-Rc
+babel-loader uses “presets” configuration to know how to convert ES6 to ES5 and also how to parse React’s JSX to JS. We can pass the configuration via “query” parameter like below:
 
-**For scss**
-For support of scss add the scss loader and it will start to work
 ```
-{
-	test: /\.scss$/,
-	loaders: [ 'style', 'css', 'sass' ]
-}
-```
-
-**Drawbacks**
-- The bundle gets really big (js+css)
-- Common css is bundled again for separate page. There is no reusing.
-Taking a closer look at the generated code, we may notice that styles are included using a <style> tag. That’s a bad practice, as it prevents browsers from caching CSS. So, let’s move it into a dedicated file.
-We are going to use the ExtractTextPlugin, which moves the generated content into a file:
-
-2. ###### Separate CSS Bundle/Files
-Even though we have a nice build set up now, where did all the CSS go? As per our configuration, **it has been inlined to JavaScript! Even though this can be convenient during development, it doesn't sound ideal**. **The current solution doesn't allow us to cache CSS. In some cases we might suffer from a Flash of Unstyled Content (FOUC). Also it becomes a massive single file (js+stylesheet)**
-**Webpack provides a means to generate a separate CSS bundle. We can achieve this using the ExtractTextPlugin.** It comes with overhead during the compilation phase, and it won't work with Hot Module Replacement (HMR) by design. Given we are using it only for production, that won't be a problem.
-
-For production builds it's recommended to extract the CSS from your bundle being able to use parallel loading of CSS/JS resources later on. This can be achieved by using the extract-text-webpack-plugin to extract the CSS when running in production mode.
-
-**Duplication**
-
-
-###### Modular and Contained CSS
-Let’s now write a small Button component, it’ll have some SCSS styles, an HTML template, and some behavior. So we’ll install the things we need. We’ll need loaders for Sass and HTML files. Also, as results are piped from one loader to another, we’ll need a CSS loader to handle the results of the Sass loader. Now, once we have our CSS, there are multiple ways to handle them, for now we’ll use a loader called the style-loader which takes a piece of CSS and injects it into the page dynamically.
-A short description of CSS Modules is that each CSS file you create has a local scope. Just like a JavaScript module has its local scope. The way it works is:
-
-**App.css**
-```
-.header {
-  color: red;
-}
-```
-**App.js**
-```
-import styles from './App.css';
-
-export default function (props) {
-
-  return <h1 className={styles.header}>Hello world!</h1>;
-
-};
-```
-You also have to update the config:
-Here we are adding localIndentName that specifies each module css classes to be prefixed with which string.
-And also doing modules option to true.
-```
-import path from 'path';
-const config = {  
-  ...
-  module: {
-    loaders: [{
-      test: /.js?$/,
-      exclude: /node_modules/,
-      loader: 'babel'
-    }, 
+module: {
+  loaders: [
     {
-     loader: 'css-loader',
-     options: {
-       modules: true,
-       localIdentName: '[path][name]__[local]--[hash:base64:5]'
-     }
-   }
-    ]
-  }
-};
-```
-So you only use classes and those classes can be referenced by name when you import the css file. The thing here now is that this .header class is not global. It will only work on JavaScript modules importing the file. This is fantastic news because now you get the power of CSS. :hover, [disabled], media queries, etc. but you reference the rules with JavaScript.
-
-
-css modules
-https://css-tricks.com/css-modules-part-1-need/
-
-###### Last things - Adding postcss Autoprefixer
-The last thing we need to do is run autoprefixer over our css to prefix things like flexbox which still don’t have consistent browser support.
-Because autoprefixer only changes the actual css rule declarations and not the selectors we actually don’t need to do anything special for our server-build. We only have to get it to work on the client Webpack build.
-
-
-```
-{
-    test: /\.scss$/,
-    loader: ExtractTextPlugin.extract({
-        loader: [
-            {
-                loader: 'css-loader',
-                query: {
-                    localIdentName: '[hash:8]',
-                    modules: true
-                }
-            },
-            {
-                loader: 'postcss-loader'
-            },
-            {
-                loader: 'sass-loader'
-            }
-        ]
-    })
+      test: /\.jsx?$/,
+      exclude: /(node_modules|bower_components)/,
+      loader: 'babel',
+      query: {
+        presets: ['react', 'es2015']
+      }
+    }
+  ]
 }
-const autoprefixer = require('autoprefixer');
 ```
 
-The postcss-loader will look for another config file called postcss.config.js in the root of your project (much like the babel-loader looks for .babelrc file).
-So let’s create a postcss.config.js file in our root:
+However in many projects babel’s configuration can become very large. So instead you can keep those them in babel-loader’s configuration file called .babelrc file. babel-loader will automatically load the .babelrc file if it exists.
+
 ```
-module.exports = {
-    plugins: [
-        autoprefixer({
-            browsers: [
-                'last 2 versions',
-                'IE >= 9',
-                'safari >= 8'
-            ]
-        })
-    ]
-};
-```
-
-
-###### Extra - CSS loaders with Hot Replacement
-First we add a new loader to our project. This makes Webpack understand what CSS is. Specifically it will understand what a url means. It will treat this as any other require, import, etc. statement. But we do not just want to understand CSS, we also want to add it to our page. With npm install style-loader we can add behavior to our CSS loading.
-```
-import path from 'path';
-
-const config = {
-
-  devtool: 'eval-source-map',
-
-  // We add an entry to connect to the hot loading middleware from
-  // the page
-  entry: [
-    'webpack-hot-middleware/client',
-    path.join(__dirname, 'app/main.js')
-  ],
-  output: {
-    path: path.join(__dirname, '/dist/'),
-    filename: '[name].js',
-    publicPath: '/'
-  },
-
-  // This plugin activates hot loading
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-  ],
-  module: {
-    loaders: [{
-      test: /\.js?$/,
-      exclude: /node_modules/,
+//webpack.config.js 
+module: {
+  loaders: [
+    {
+      test: /\.jsx?$/,
+      exclude: /(node_modules|bower_components)/,
       loader: 'babel'
-    }, {
-      test: /\.css?$/,
-      loader: 'style!css' // This are the loaders
-    }]
-  }
-};
-```
+    }
+  ]
+}
 
-In our config we tell Webpack to first run the css-loader and then the style-loader, it reads right to left. The css-loader makes any urls within it part of our dependency graph and the style-loader puts a style tag for the CSS in our HTML.
-So now you see that we do not only process files with Webpack, we can create side effects like creating style tags. With the HOT middleware, we can even run these side effects as we change the code of the app. That means every time you change some CSS Webpack will just update the existing style tag on the page, without a refresh.
+
+//.bablerc
+{
+ “presets”: [“react”, “es2015”]
+}
+```
 
 # Running with Server
 # ============================================
@@ -1553,7 +1047,128 @@ app.get('*', function response(req, res) {
 app.listen(3000);  
 ```
 
+# Handling Stylesheets
+# ============================================
+###### Basic Setup (Inline css Stylesheets)
+In the basic setup you can just embed css directly into the JS and dont need to make a separate bundled file. The styles would get rendered easily.
+**app/main.css**
+```
+body {
+  background: cornsilk;
+}
+```
 
+Require it so that webpack can find it.
+**app/index.js**
+```
+require('./main.css');
+```
+
+**css**
+```
+loaders: [
+        {
+          test: /\.css$/,
+          loaders: ['style', 'css'],
+          include: paths
+        }
+]
+```
+In this case, css-loader gets evaluated first, then style-loader. css-loader will resolve @import and url statements in our CSS files. style-loader deals with require statements in our JavaScript. A similar approach works with CSS preprocessors, like Sass and Less, and their loaders.
+
+###### Basic Setup (Inline scss Stylesheets)
+For support of scss add the scss loader and it will start to work
+```
+{
+	test: /\.scss$/,
+	loaders: [ 'style', 'css', 'sass' ]
+}
+```
+
+###### Separate CSS Bundle/Files
+Even though we have a nice build set up now, where did all the CSS go? As per our configuration, it has been inlined to JavaScript! Even though this can be convenient during development, it doesn't sound ideal. The current solution doesn't allow us to cache CSS. In some cases we might suffer from a Flash of Unstyled Content (FOUC).
+Webpack provides a means to generate a separate CSS bundle. We can achieve this using the ExtractTextPlugin. It comes with overhead during the compilation phase, and it won't work with Hot Module Replacement (HMR) by design. Given we are using it only for production, that won't be a problem.
+
+###### Modular and Contained CSS
+Let’s now write a small Button component, it’ll have some SCSS styles, an HTML template, and some behavior. So we’ll install the things we need. We’ll need loaders for Sass and HTML files. Also, as results are piped from one loader to another, we’ll need a CSS loader to handle the results of the Sass loader. Now, once we have our CSS, there are multiple ways to handle them, for now we’ll use a loader called the style-loader which takes a piece of CSS and injects it into the page dynamically.
+A short description of CSS Modules is that each CSS file you create has a local scope. Just like a JavaScript module has its local scope. The way it works is:
+
+**App.css**
+```
+.header {
+  color: red;
+}
+```
+**App.js**
+```
+import styles from './App.css';
+
+export default function (props) {
+
+  return <h1 className={styles.header}>Hello world!</h1>;
+
+};
+```
+You also have to update the config:
+```
+import path from 'path';
+const config = {  
+  ...
+  module: {
+    loaders: [{
+      test: /.js?$/,
+      exclude: /node_modules/,
+      loader: 'babel'
+    }, {
+      test: /.css?$/,
+      loader: 'style!css?modules&localIdentName=[name]---[local]---[hash:base64:5]'
+    }]
+  }
+};
+```
+
+So you only use classes and those classes can be referenced by name when you import the css file. The thing here now is that this .header class is not global. It will only work on JavaScript modules importing the file. This is fantastic news because now you get the power of CSS. :hover, [disabled], media queries, etc. but you reference the rules with JavaScript.
+
+###### CSS loaders with Hot Replacement
+First we add a new loader to our project. This makes Webpack understand what CSS is. Specifically it will understand what a url means. It will treat this as any other require, import, etc. statement. But we do not just want to understand CSS, we also want to add it to our page. With npm install style-loader we can add behavior to our CSS loading.
+```
+import path from 'path';
+
+const config = {
+
+  devtool: 'eval-source-map',
+
+  // We add an entry to connect to the hot loading middleware from
+  // the page
+  entry: [
+    'webpack-hot-middleware/client',
+    path.join(__dirname, 'app/main.js')
+  ],
+  output: {
+    path: path.join(__dirname, '/dist/'),
+    filename: '[name].js',
+    publicPath: '/'
+  },
+
+  // This plugin activates hot loading
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+  ],
+  module: {
+    loaders: [{
+      test: /\.js?$/,
+      exclude: /node_modules/,
+      loader: 'babel'
+    }, {
+      test: /\.css?$/,
+      loader: 'style!css' // This are the loaders
+    }]
+  }
+};
+```
+
+In our config we tell Webpack to first run the css-loader and then the style-loader, it reads right to left. The css-loader makes any urls within it part of our dependency graph and the style-loader puts a style tag for the CSS in our HTML.
+So now you see that we do not only process files with Webpack, we can create side effects like creating style tags. With the HOT middleware, we can even run these side effects as we change the code of the app. That means every time you change some CSS Webpack will just update the existing style tag on the page, without a refresh.
 
 # Build Performance
 # ============================================
@@ -1591,16 +1206,30 @@ The UglifyJsPlugin uses SourceMaps to map errors to source code. And SourceMaps 
 - Prefetch modules
 - Only use resolve.modulesDirectories for nested paths. Most paths should use resolve.root. This can give significant performance gains. 
 
-# ==================================================
+
 # Long Term Caching
 
-# ==================================================
+# Common Chunks Plugin
+new webpack.optimize.CommonsChunkPlugin(options)
+**options.name or options.names (string|string[])**: The chunk name of the commons chunk. An existing chunk can be selected by passing a name of an existing chunk. If an array of strings is passed this is equal to invoking the plugin multiple times for each chunk name. If omitted and options.async or options.children is set all chunks are used, otherwise options.filename is used as chunk name.
+**options.filename (string)**: The filename template for the commons chunk. Can contain the same placeholder as output.filename. If omitted the original filename is not modified (usually output.filename or output.chunkFilename).
+options.minChunks (number|Infinity|function(module, count) -> boolean): The minimum number of chunks which need to contain a module before it’s moved into the commons chunk. The number must be greater than or equal 2 and lower than or equal to the number of chunks. Passing Infinity just creates the commons chunk, but moves no modules into it. By providing a function you can add custom logic. (Defaults to the number of chunks)
+**options.chunks (string[])**: Select the source chunks by chunk names. The chunk must be a child of the commons chunk. If omitted all entry chunks are selected.
+**options.children (boolean)**: If true all children of the commons chunk are selected
+**options.async (boolean|string)**: If true a new async commons chunk is created as child of options.name and sibling of options.chunks. It is loaded in parallel with options.chunks. It is possible to change the name of the output file by providing the desired string instead of true.
+options.minSize (number): Minimum size of all common module before a commons chunk is created.
+
 # Production Cofig
 http://www.christianalfoni.com/articles/2015_04_19_The-ultimate-webpack-setup
 -p sets NODE_ENV = “production”
 Following are the different modes: 
 In production disable sourcemaps
 devtool: "eval"
+
+Add swap if webpack gets killed
+http://stackoverflow.com/questions/30747314/webpack-uglify-plugin-returns-killed-on-ubuntu
+Adding swap
+http://stackoverflow.com/questions/17173972/how-do-you-add-swap-to-an-ec2-instance
 
 # Webpack CLI
 **Production shortcut -p**
@@ -1674,4 +1303,3 @@ https://medium.com/@okonetchnikov/long-term-caching-of-static-assets-with-webpac
 http://blog.xebia.fr/2016/03/08/lazy-loading-avec-webpack-angularjs/
 https://blog.risingstack.com/using-react-with-webpack-tutorial/
 http://dontkry.com/posts/code/single-page-modules-with-webpack.html
-https://medium.com/@dabit3/beginner-s-guide-to-webpack-b1f1a3638460

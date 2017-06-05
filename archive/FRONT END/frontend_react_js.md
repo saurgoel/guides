@@ -64,42 +64,9 @@ numbers.reduce(function (previous, current){
 })
 ```
 
-
-# ==========================================
-# Server Side Rendering
+###### Server Side Rendering
 This is a very nice feature that helps in fast rendering. Instead of waiting for the client to load javascript and then run, server itself renders the page and serves the page so that client does not need to run anything. This makes the page fast and also solves the SEO thing.
 React boasts a unique feature that facilitates quick rendering of content, for better user interaction. A virtual React DOM allows both client side and server side rendering which decreases  the page load time. Facebook, a high user traffic site employs React Js since it delivers amazing user experience, which is vital for a website of its caliber.
-
-###### Passing data between server (node) to Client
-```
-var express = require('express');
-var router = express.Router();
-var React = require('react');
-var reactDom = require('react-dom/server');
-var App = React.createFactory(require('../components/index'));
-
-router.get('/', function(req,res) {
-    var reactHtml = reactDom.renderToString(App({exists: false}));
-    res.render('../../tutorHub/views/index.jade', {reactOutput: reactHtml});
-});
-module.exports = router;
-```
-I am trying to pass a prop, exists: false, to the component.
-But in my actual component when I try to console.log...
-```
-render(){
-
-    console.log(this.props.exists);
-        return (
-            <Register />
-        );
-}
-```
-
-After the pre-render react re-renders the app usign client side js.
-The reason is on your client-side, React will render your App component one more time. This time, React will re-render which components are different from server-rendered components. It will refresh your props.exists to undefined because you don't pass anything to App component in your client-side code. There are some techniques to solve it. One way is that in your client-side code, you request exists from the server and pass it to your App component before rendering your application.
-
-http://stackoverflow.com/questions/39888623/how-to-pass-data-in-server-side-rendering-to-reactjs-component-from-node
 
 ###### Seo Benefits
 I’m an Angular fan just like everybody else, but one pain point is the potential SEO impact.
@@ -183,9 +150,8 @@ You can use .js extension and use bable-loader with react presets. It will picku
 ```
 { test: [/\.js$/, /\.es6$/], loader: ["babel-loader"], query: { cacheDirectory: "babel_cache", presets: ["react", "es2015"]}}
 ```
-
-# =======================================================
 # COMPONENTS
+# =======================================================
 Component are classes. When you use them an instance of them is created with all the states, props etc.
 There are two types of component. These types are not just react-based but can be visualized in any other component-based UI library or framework. They include:
 
@@ -366,8 +332,8 @@ Components are a very useful way to compose and reuse views (and logic).
 
 ###### Components can be Function or Class
 
-# =======================================================
 # PROPERTIES
+# =======================================================
 ```
 var data = {
 	title: 'Professional Node.js',
@@ -406,8 +372,8 @@ function withdraw(account, amount) {
   account.total -= amount;
 }
 
-# =======================================================
 # States and Lifecycle
+# =======================================================
 ###### React Components - Function vs Class
 Functions dont have a lifecycle. Give input and they give output. On the other hand react class components have a complete lifecycle.
 ###### Stateless Functional Components
@@ -712,6 +678,11 @@ renderSquare(i) {
 
 
 
+Props are not meant to be changed 
+They are passed at the start of the component in the constructur 
+post that they remain the same 
+for chaning vars use state
+Pages that require auth to render?
 
 
 # STATE MANAGEMENT - FLUX
